@@ -1,0 +1,17 @@
+Metaserver in php:
+gestisce richieste di registrazione e query con GET.
+implementato con sqlite o mysql (scelta dalla configurazione del metaserver)
+
+Server: interfaccia dal server di TressetteNetwork4
+Opzioni:
+  metaserver=indirizzo:porta
+  servername=nome del server preso dal metaserver passato
+
+Nel codice inserisci metaserver predefinito se non viene passato metaserver
+
+Client: interfaccia per connettersi direttamente al metaserver
+  metaserver.py: codice usato sia da client che da server per comunicare con il metaserver
+  Opzioni: come per il server, solo che effettua la connessione invece che la registrazione.
+
+Launcher: interfaccia query per il metaserver
+  Utilizza metaserver.py per creare un'interfaccia con una lista di server disponibili.
