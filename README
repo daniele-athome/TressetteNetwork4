@@ -1,0 +1,3 @@
+TressetteNetwork4 - A Tressette 4-multiplayer game written in Python
+
+TS4 uses the StargateRPG network framework, modified a bit to work better with this project.

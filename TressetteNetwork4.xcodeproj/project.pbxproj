@@ -1,0 +1,141 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		D924A3550DD1FFD700275779 /* TressetteNetwork4 */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = D924A3590DD1FFDE00275779 /* Build configuration list for PBXAggregateTarget "TressetteNetwork4" */;
+			buildPhases = (
+			);
+			dependencies = (
+			);
+			name = TressetteNetwork4;
+			productName = TressetteNetwork4;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXFileReference section */
+		61AEDBDA0DD5C7E000B5A5FD /* launcher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = launcher.py; sourceTree = "<group>"; };
+		61AEDBE50DD5C84A00B5A5FD /* ts4launcher */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ts4launcher; sourceTree = "<group>"; };
+		D913BEBE0DD1E66C00095914 /* cards */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cards; sourceTree = "<group>"; };
+		D913BEE90DD1E66C00095914 /* client.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = client.py; sourceTree = "<group>"; };
+		D913BEEA0DD1E66C00095914 /* deck.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = deck.py; sourceTree = "<group>"; };
+		D913BEEB0DD1E66C00095914 /* graphics.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = graphics.py; sourceTree = "<group>"; };
+		D913BEEC0DD1E66C00095914 /* main.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = main.py; sourceTree = "<group>"; };
+		D913BEEE0DD1E66C00095914 /* miscgui.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = miscgui.py; sourceTree = "<group>"; };
+		D913BEEF0DD1E66C00095914 /* objects.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = objects.py; sourceTree = "<group>"; };
+		D913BEF00DD1E66C00095914 /* player.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = player.py; sourceTree = "<group>"; };
+		D913BEF10DD1E66C00095914 /* proto.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = proto.txt; sourceTree = "<group>"; };
+		D913BEF20DD1E66C00095914 /* protocol.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = protocol.py; sourceTree = "<group>"; };
+		D913BEF30DD1E66C00095914 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		D913BEF40DD1E66C00095914 /* server.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = server.py; sourceTree = "<group>"; };
+		D913BEF50DD1E66C00095914 /* tressettenetwork4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = tressettenetwork4; sourceTree = "<group>"; };
+		D913BEF60DD1E68E00095914 /* netframework */ = {isa = PBXFileReference; lastKnownFileType = folder; path = netframework; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		D913BEB00DD1E61200095914 = {
+			isa = PBXGroup;
+			children = (
+				D913BEF60DD1E68E00095914 /* netframework */,
+				D913BEBE0DD1E66C00095914 /* cards */,
+				D913BEE90DD1E66C00095914 /* client.py */,
+				D913BEEA0DD1E66C00095914 /* deck.py */,
+				D913BEEB0DD1E66C00095914 /* graphics.py */,
+				61AEDBDA0DD5C7E000B5A5FD /* launcher.py */,
+				D913BEEC0DD1E66C00095914 /* main.py */,
+				D913BEEE0DD1E66C00095914 /* miscgui.py */,
+				D913BEEF0DD1E66C00095914 /* objects.py */,
+				D913BEF00DD1E66C00095914 /* player.py */,
+				D913BEF10DD1E66C00095914 /* proto.txt */,
+				D913BEF20DD1E66C00095914 /* protocol.py */,
+				D913BEF30DD1E66C00095914 /* README */,
+				D913BEF40DD1E66C00095914 /* server.py */,
+				D913BEF50DD1E66C00095914 /* tressettenetwork4 */,
+				61AEDBE50DD5C84A00B5A5FD /* ts4launcher */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXProject section */
+		D913BEB20DD1E61200095914 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = D913BEB50DD1E61200095914 /* Build configuration list for PBXProject "TressetteNetwork4" */;
+			compatibilityVersion = "Xcode 2.4";
+			hasScannedForEncodings = 0;
+			mainGroup = D913BEB00DD1E61200095914;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				D924A3550DD1FFD700275779 /* TressetteNetwork4 */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		D913BEB30DD1E61200095914 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Debug;
+		};
+		D913BEB40DD1E61200095914 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Release;
+		};
+		D924A3560DD1FFD700275779 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = TressetteNetwork4;
+			};
+			name = Debug;
+		};
+		D924A3570DD1FFD700275779 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = TressetteNetwork4;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D913BEB50DD1E61200095914 /* Build configuration list for PBXProject "TressetteNetwork4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D913BEB30DD1E61200095914 /* Debug */,
+				D913BEB40DD1E61200095914 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D924A3590DD1FFDE00275779 /* Build configuration list for PBXAggregateTarget "TressetteNetwork4" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D924A3560DD1FFD700275779 /* Debug */,
+				D924A3570DD1FFD700275779 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D913BEB20DD1E61200095914 /* Project object */;
+}

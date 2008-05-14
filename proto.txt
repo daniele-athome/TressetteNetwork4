@@ -1,0 +1,35 @@
+protocollo
+================
+
+server - listen -> accept:
+S: version-info (package,version)
+C: version-info (package,version)
+S: version-check (True|False)
+C: join-request (name,position)
+S: game-accept (True|False)
+C: -- wait
+
+
+player
+===============
+
+Client:
+ -- TS4Client si connette e manda l'identificazione, seguira' la procedura fino al READY_DISTRIB
+ -- dopodiche ClientPlayer si occupera' di ricevere le 10 carte per lui, e deterra' il controllo fino a fine partita
+
+
+grafica
+===============
+Ogni menu restituisce un qualcosa che dice al main loop su quale menu spostarsi
+Ad ogni cambio di menu, le sprite precedenti vanno distrutte e quelle nuove ricaricate
+
+Gestione a menu:
+Crea un RenderUpdates per ogni menu, dove all'interno si trovano dei Group, elementi del menu.
+Ogni menu avra' un suo loop per gestire gli eventi da tastiera e gli eventi grafici.
+
+client: JOIN
+server: JOIN response
+--- wait for other players ---
+server: READY_DISTRIB
+client: --- wait for user ---
+client: CARDS_DISTRIB
