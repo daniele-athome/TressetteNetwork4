@@ -362,7 +362,6 @@ class ClientPlayer(Player):
 
 			# abilita tastiera
 			if len(self.mycards) == 1:
-				self.gui.set_status("Un momento...")
 				self._send_card(self.mycards[0])
 
 			else:
@@ -401,6 +400,7 @@ class ClientPlayer(Player):
 
 	def _send_card(self,card_num):
 			self.gui.conn.send(interfaces.NetMethod(protocol.THROW_CARD,card_num))
+			self.gui.set_status("Un momento...")
 
 class GameStats:
 	'''Contenitore delle statistiche di gioco.'''

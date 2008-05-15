@@ -2,7 +2,7 @@ Cose importanti
 ==============================
 Punteggio in tempo reale (dove mizzica lo metto?)
 Windows: codici di errore delle socket
-Launcher. Prima di passare a wx.Process, portare fcntl
+Launcher: Prima di passare a wx.Process, portare fcntl
 
 Altro
 ==============================

@@ -254,9 +254,6 @@ class TS4Client(interfaces.NetEvents):
 		if isinstance(self.current_menu,graphics.GameTable):
 			self.current_menu.throw_card(position,card_num)
 
-		if position == self.player.position:
-			self.set_status('Un momento...')
-
 	def back_all_cards(self,position):
 		'''Torna le carte in tavola verso il giocatore in position.'''
 
