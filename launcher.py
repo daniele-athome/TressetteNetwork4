@@ -25,10 +25,9 @@ from threading import Thread
 import wx
 
 if subprocess.mswindows:
-	import msvcrt
-else:
-	import fcntl
+	import msvcrt,ctypes
 
+import select
 import main		# ts4 starter
 
 PACKAGE=main.PACKAGE+" Launcher"
@@ -142,7 +141,7 @@ class LauncherWindow(wx.Dialog):
 		self.server_frame.Add(self.standalone,0,wx.ALIGN_TOP|wx.ALL,10)
 
 		# linea 3: multiline text "server stdout"
-		self.stdout = wx.TextCtrl(panel, wx.ID_ANY, style=wx.TE_MULTILINE)
+		self.stdout = wx.TextCtrl(panel, wx.ID_ANY, style=wx.TE_MULTILINE, size=(-1,100))
 		self.stdout.SetEditable(False)
 
 		self.server_frame.Add(self.stdout,1,wx.EXPAND|wx.ALL-wx.TOP,5)
@@ -205,6 +204,7 @@ class LauncherWindow(wx.Dialog):
 
 		panel.SetSizer(self.sizer)
 		panel.SetAutoLayout(True)
+		self.sizer.Fit(self)
 
 		# focus su address
 		self.address.SetFocus()
@@ -247,6 +247,7 @@ class LauncherWindow(wx.Dialog):
 				self.button_start.SetLabel("Stop")
 				self.standalone.Enable(False)
 				self.bind_port.Enable(False)
+				self.stdout.Clear()
 
 			else:
 				addr = self.address.GetValue().strip()
@@ -337,24 +338,24 @@ class LauncherThread(Thread):
 		self.output_callback = output_callback
 		self.killed = False
 
-	if subprocess.mswindows:
+	def _read(self,desc_list):
+		lines = []
+		for d in desc_list:
+			lines.append('')
 
-		def _read(self,desc):
-			line = ''
-			x = msvcrt.get_osfhandle(desc.fileno())
-			(line, nAvail, nMessage) = ctypes.windll.kernel32.PeekNamedPipe(x, 0)
-			if maxsize < nAvail:
-				nAvail = maxsize
-			if nAvail > 0:
-				(errCode, line) = ctypes.windll.kernel32.ReadFile(x, nAvail, None)
+		rd,wd,ed = select.select(desc_list,[],[],0.5)
 
-			return line
+		for desc in rd:
+			lines[rd.index(desc)] = desc.readline()
+
+		return lines
 
 	def run(self):
 
 		executable = "python"
-		if os.name == 'nt':
+		if subprocess.mswindows:
 			executable = "pythonw"
+
 		args = [executable, main.__file__]
 		args.extend(self.argv)
 
@@ -364,22 +365,13 @@ class LauncherThread(Thread):
 		try:
 			self.process = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 
-			if not subprocess.mswindows:
-				fcntl.fcntl(self.process.stderr.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
-
 			while(self.process.poll() == None):
 
 				line = ''
 				line2 = ''
 
 				try:
-					if subprocess.mswindows:
-						line = self._read(self.process.stdout)
-						line2 = self._read(self.process.stderr)
-
-					else:
-						line = self.process.stdout.readline()
-						line2 = self.process.stderr.readline()
+					line,line2 = self._read((self.process.stdout,self.process.stderr))
 
 				except:
 					pass
@@ -403,8 +395,7 @@ class LauncherThread(Thread):
 		self.callback(-100)
 
 	def kill(self):
-		if not hasattr(os,'kill') or os.name == 'nt':
-			import ctypes
+		if subprocess.mswindows:
 			PROCESS_TERMINATE = 1
 			handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, self.process.pid)
 			ctypes.windll.kernel32.TerminateProcess(handle, -1)
@@ -423,7 +414,7 @@ class TS4Launcher(wx.App):
 		wx.App.SetAppName(self,PACKAGE)
 
 	def OnInit(self):
-		window = LauncherWindow(None, wx.ID_ANY, self.name, size=(400, 500))
+		window = LauncherWindow(None, wx.ID_ANY, self.name, size=(400, 400))
 		window.Centre()
 		window.Show(True)
 		window.app = self
