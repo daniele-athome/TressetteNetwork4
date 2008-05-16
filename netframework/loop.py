@@ -110,7 +110,7 @@ class NetLoop:
 				break
 
 			if self.loop_func: self.loop_func()
-			time.sleep(0.05)
+			#time.sleep(0.05)
 
 		#print "(NET) Checking termination callback..."
 		if self.atexit: self.atexit[0](self.connection,*self.atexit[1])

@@ -45,6 +45,8 @@ class Menu:
 		# timeout (lista di (millisecondi,callback,args,start_time))
 		self.timeouts = []
 
+		self.clock = pygame.time.Clock()
+
 	def add_timeout(self,millisecs,callback,*args):
 		'''Aggiunge una funzione richiamata ogni millisecondi dati.
 
@@ -79,6 +81,8 @@ class Menu:
 
 		for i in delete:
 			del self.timeouts[i]
+
+		self.clock.tick(100)
 
 		tmp = self.goto
 		self.goto = None
@@ -558,8 +562,6 @@ if __name__ == '__main__':
 		p.updater.add(p.score)
 
 	while True:
-		time.sleep(0.05)
-
 		goto = p.menu()
 
 		if goto != None:
