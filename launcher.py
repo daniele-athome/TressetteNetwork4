@@ -20,9 +20,14 @@
 #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-import sys,os,subprocess,time
+import sys,os,subprocess,time,errno
 from threading import Thread
 import wx
+
+if subprocess.mswindows:
+	import msvcrt
+else:
+	import fcntl
 
 import main		# ts4 starter
 
@@ -332,6 +337,19 @@ class LauncherThread(Thread):
 		self.output_callback = output_callback
 		self.killed = False
 
+	if subprocess.mswindows:
+
+		def _read(self,desc):
+			line = ''
+			x = msvcrt.get_osfhandle(desc.fileno())
+			(line, nAvail, nMessage) = ctypes.windll.kernel32.PeekNamedPipe(x, 0)
+			if maxsize < nAvail:
+				nAvail = maxsize
+			if nAvail > 0:
+				(errCode, line) = ctypes.windll.kernel32.ReadFile(x, nAvail, None)
+
+			return line
+
 	def run(self):
 
 		executable = "python"
@@ -345,26 +363,29 @@ class LauncherThread(Thread):
 
 		try:
 			self.process = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-			# TODO ---------------------------------- porting to Windows
-			import fcntl
-			fcntl.fcntl(self.process.stderr.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
-			# TODO ---------------------------------- porting to Windows
+
+			if not subprocess.mswindows:
+				fcntl.fcntl(self.process.stderr.fileno(), fcntl.F_SETFL, os.O_NONBLOCK)
 
 			while(self.process.poll() == None):
 
 				line = ''
+				line2 = ''
+
 				try:
-					line = self.process.stdout.readline()
+					if subprocess.mswindows:
+						line = self._read(self.process.stdout)
+						line2 = self._read(self.process.stderr)
+
+					else:
+						line = self.process.stdout.readline()
+						line2 = self.process.stderr.readline()
+
 				except:
 					pass
+
 				if len(line) > 0:
 					self.output_callback(line)
-
-				line2 = ''
-				try:
-					line2 = self.process.stderr.readline()
-				except:
-					pass
 				if len(line2) > 0:
 					self.output_callback(line2)
 
@@ -402,7 +423,7 @@ class TS4Launcher(wx.App):
 		wx.App.SetAppName(self,PACKAGE)
 
 	def OnInit(self):
-		window = LauncherWindow(None, wx.ID_ANY, self.name, size=(400, 400))
+		window = LauncherWindow(None, wx.ID_ANY, self.name, size=(400, 500))
 		window.Centre()
 		window.Show(True)
 		window.app = self
