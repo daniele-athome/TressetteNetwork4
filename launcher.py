@@ -305,11 +305,7 @@ class LauncherWindow(wx.Dialog):
 			self.process = wx.Process(self)
 			self.process.Redirect()
 
-			executable = "python"
-			if os.name == 'nt':
-				executable = "pythonw"
-
-			args = [executable, "-u", main.__file__]
+			args = ["python", "-u", main.__file__]
 			args.extend(argv)
 
 			print "Executing \""+' '.join(args)+"\""
