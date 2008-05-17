@@ -20,12 +20,8 @@
 #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-import sys,os,subprocess,time,errno
-from threading import Thread
+import sys,os,time,errno
 import wx
-
-if subprocess.mswindows:
-	import msvcrt,ctypes
 
 import select
 import main		# ts4 starter
@@ -110,10 +106,16 @@ class ReturnDialog(wx.Dialog):
 class LauncherWindow(wx.Dialog):
 	def __init__(self, parent, ID, title, position = wx.DefaultPosition, size = wx.DefaultSize):
 		wx.Dialog.__init__(self, parent, wx.ID_ANY, title, position, size)
-		self.Bind(wx.EVT_CLOSE, self.cb_close)
-		EVT_RETURN(self,self.return_event)
 
+		self.Bind(wx.EVT_CLOSE, self.cb_close)
+		self.Bind(wx.EVT_END_PROCESS, self.OnProcessEnded)
+		self.Bind(wx.EVT_IDLE, self.OnIdle)
+
+		self.process = None
+		self.pid = 0
 		self.exiting = False
+		self.output = ''
+		self.killed = False
 		panel = wx.Panel(self, wx.ID_ANY)
 
 		# info server
@@ -218,7 +220,7 @@ class LauncherWindow(wx.Dialog):
 			self.cb_start(None)
 
 		self.exiting = True
-		if not hasattr(self,'thread'):
+		if self.process == None:
 			self.Destroy()
 			self.app.ExitMainLoop()
 
@@ -229,15 +231,54 @@ class LauncherWindow(wx.Dialog):
 		self.name.Enable(not self.standalone.GetValue())
 		self.cb_connect_text()
 
+	def OnIdle(self, event=None):
+		if self.process != None:
+			out, err = self._read_process()
+
+			self.output = self.output + out + err
+			if self.standalone.GetValue():
+				self.stdout.AppendText(out+err)
+
 	def cb_connect_text(self, event=None):
 		self.bind_port.Enable(len(self.address.GetValue().strip()) == 0 or self.standalone.GetValue())
 		self.bind_label.Enable(self.bind_port.IsEnabled())
+
+	def __del__(self):
+		if self.process != None:
+			self.process.Detach()
+			self._kill()
+
+	def _read_process(self):
+		out = err = ''
+
+		stream = self.process.GetInputStream()
+		stream2 = self.process.GetErrorStream()
+
+		if stream.CanRead():
+			out = stream.read()
+
+		if stream2.CanRead():
+			err = stream.read()
+
+		# mischiamo stdout e stderr, mettiamo newline se necessario
+		try:
+			if out[-1] != '\n' and err[-1] != '\n':
+				out = out + '\n'
+		except:
+			pass
+
+		return out,err
+
+	def _kill(self):
+		if self.pid > 0:
+			self.process.Kill(self.pid,wx.SIGTERM)
+			self.killed = True
 
 	def cb_start(self, event=None):
 		if self.button_start.GetLabel() == "Stop":
 			self.button_start.SetLabel("Termino il server...")
 			self.button_start.Enable(False)
-			self.thread.kill()
+			self._kill()
 
 		else:
 			argv = []
@@ -260,151 +301,77 @@ class LauncherWindow(wx.Dialog):
 
 				self.Show(False)
 
-			self.output = []
-			self.thread = LauncherThread(argv,self.cb_child,self.cb_child)
-			self.thread.start()
+			self.output = ''
+			self.killed = False
+			self.process = wx.Process(self)
+			self.process.Redirect()
 
-	def cb_child(self, retcode):
-		wx.PostEvent(self, ReturnEvent(retcode))
+			executable = "python"
+			if os.name == 'nt':
+				executable = "pythonw"
 
-	def return_event(self, event):
-		retcode = event.data
+			args = [executable, "-u", main.__file__]
+			args.extend(argv)
 
-		if isinstance(retcode,int):
+			print "Executing \""+' '.join(args)+"\""
+			self.pid = wx.Execute(' '.join(args), wx.EXEC_ASYNC, self.process)
 
-			del self.thread
-			if retcode != main.EXIT_SUCCESS:
+	def OnProcessEnded(self, event):
+		retcode = event.GetExitCode()
 
-				text = main.PACKAGE+" terminato per motivi sconosciuti."
-				if retcode < main.EXIT_SUCCESS:
-					# segnale di uscita
-					text = main.PACKAGE+" terminato a causa del segnale "+str(-retcode)+"."
+		if retcode != main.EXIT_SUCCESS:
 
-				elif retcode == main.EXIT_CONN_CLOSED:
-					text = u"La connessione al server di gioco è stata chiusa."
+			showdlg = True
+			text = main.PACKAGE+" terminato per motivi sconosciuti."
+			if retcode < main.EXIT_SUCCESS:
+				# segnale di uscita
+				text = main.PACKAGE+" terminato a causa del segnale "+str(-retcode)+"."
 
-				elif retcode == main.EXIT_CONN_REFUSED:
-					text = u"La connessione al server di gioco è stata rifiutata."
+				if self.killed: showdlg = False
 
-				elif retcode == main.EXIT_CONN_ERROR:
-					text = "Errore di connessione al server di gioco."
+			elif retcode == main.EXIT_CONN_CLOSED:
+				text = u"La connessione al server di gioco è stata chiusa."
 
-				elif retcode == main.EXIT_SYS_ERROR:
-					text = main.PACKAGE+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
+			elif retcode == main.EXIT_CONN_REFUSED:
+				text = u"La connessione al server di gioco è stata rifiutata."
 
-				elif retcode == main.EXIT_ARGV:
-					text = "Argomenti di avvio non validi."
+			elif retcode == main.EXIT_CONN_ERROR:
+				text = "Errore di connessione al server di gioco."
 
-				text2 = ''
-				for line in self.output:
-					text2 = text2 + line
+			elif retcode == main.EXIT_SYS_ERROR:
+				text = main.PACKAGE+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
 
-				d = ReturnDialog(self, text,main.PACKAGE + " terminato",text2)
+			elif retcode == main.EXIT_ARGV:
+				text = "Argomenti di avvio non validi."
+
+			if showdlg:
+				out,err = self._read_process()
+				self.output = self.output + out + err
+
+				d = ReturnDialog(self, text,main.PACKAGE + " terminato",self.output)
 				d.ShowModal()
 				d.Destroy()
 
-			if self.IsShown():
-				self.button_start.SetLabel("Avvia")
-				self.button_start.Enable(True)
-				self.standalone.Enable(True)
-				self.bind_port.Enable(True)
+		self.process.Destroy()
+		self.process = None
 
-			else:
-				self.Close()
-
-			if self.exiting:
-				self.Destroy()
-				self.app.ExitMainLoop()
+		if self.IsShown():
+			self.button_start.SetLabel("Avvia")
+			self.button_start.Enable(True)
+			self.standalone.Enable(True)
+			self.bind_port.Enable(True)
 
 		else:
-			# solo una linea di misero output...
-			self.output.append(retcode)
+			self.Close()
 
-			# standalone?
-			if self.standalone.GetValue():
-				self.stdout.AppendText(retcode)
+		if self.exiting:
+			self.Destroy()
+			self.app.ExitMainLoop()
 
 	def cb_version(self, event=None):
 		d = wx.MessageDialog(self, "Launcher versione "+VERSION+"\n\n"+main.PACKAGE+" versione "+main.VERSION, "Versione", wx.OK)
 		d.ShowModal()
 		d.Destroy()
-
-class LauncherThread(Thread):
-	def __init__(self,argv,callback,output_callback):
-		Thread.__init__(self)
-
-		self.argv = argv
-		self.callback = callback
-		self.output_callback = output_callback
-		self.killed = False
-
-	def _read(self,desc_list):
-		lines = []
-		for d in desc_list:
-			lines.append('')
-
-		rd,wd,ed = select.select(desc_list,[],[],0.5)
-
-		for desc in rd:
-			lines[rd.index(desc)] = desc.readline()
-
-		return lines
-
-	def run(self):
-
-		executable = "python"
-		if subprocess.mswindows:
-			executable = "pythonw"
-
-		args = [executable, main.__file__]
-		args.extend(self.argv)
-
-		# inizia processo spawnato
-		print "Arguments:",args
-
-		try:
-			self.process = subprocess.Popen(args,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-
-			while(self.process.poll() == None):
-
-				line = ''
-				line2 = ''
-
-				try:
-					line,line2 = self._read((self.process.stdout,self.process.stderr))
-
-				except:
-					pass
-
-				if len(line) > 0:
-					self.output_callback(line)
-				if len(line2) > 0:
-					self.output_callback(line2)
-
-			print "Returned:",self.process.returncode
-			if self.process.returncode < 0 and self.killed:
-				self.callback(0)
-			else:
-				self.callback(self.process.returncode)
-
-			return
-
-		except OSError,detail:
-			print "OSError",detail
-
-		self.callback(-100)
-
-	def kill(self):
-		if subprocess.mswindows:
-			PROCESS_TERMINATE = 1
-			handle = ctypes.windll.kernel32.OpenProcess(PROCESS_TERMINATE, False, self.process.pid)
-			ctypes.windll.kernel32.TerminateProcess(handle, -1)
-			ctypes.windll.kernel32.CloseHandle(handle)
-
-		else:
-			os.kill(self.process.pid,15)
-
-		self.killed = True
 
 class TS4Launcher(wx.App):
 	def __init__(self,argv):

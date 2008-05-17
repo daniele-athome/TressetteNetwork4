@@ -130,9 +130,6 @@ class TS4App:
 			self.server = ('',PORT)
 			self.client = False
 
-		# thread per flushare lo standard output (madonna...)
-		FlushThread(sys.stdout,sys.stderr).start()
-
 		# determina se dobbiamo essere client o server
 		if not self.client:
 			# in ogni caso fai partire il server
@@ -195,17 +192,6 @@ class TS4App:
 			print "Pygame version",pygame.version.ver
 		except:
 			print "Pygame not installed."
-
-class FlushThread(Thread):
-	def __init__(self,*fd):
-		Thread.__init__(self)
-		self.fd = fd
-
-	def run(self):
-		while True:
-			for desc in self.fd:
-				desc.flush()
-			time.sleep(1.0)
 
 if __name__ == '__main__':
 	app = TS4App()
