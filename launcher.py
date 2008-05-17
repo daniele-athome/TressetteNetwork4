@@ -271,7 +271,18 @@ class LauncherWindow(wx.Dialog):
 
 	def _kill(self):
 		if self.pid > 0:
-			self.process.Kill(self.pid,wx.SIGTERM)
+			print "Killing process",self.pid
+			if os.name == 'nt':
+				import ctypes
+				# PROCESS_TERMINATE = 1
+				handle = ctypes.windll.kernel32.OpenProcess(1, False, self.pid)
+				ctypes.windll.kernel32.TerminateProcess(handle, -1)
+				ctypes.windll.kernel32.CloseHandle(handle)
+
+			else:
+				self.process.Kill(self.pid,wx.SIGTERM)
+
+			self.pid = 0
 			self.killed = True
 
 	def cb_start(self, event=None):
