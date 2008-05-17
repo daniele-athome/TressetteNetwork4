@@ -380,7 +380,7 @@ class LauncherWindow(wx.Dialog):
 			self.app.ExitMainLoop()
 
 	def cb_version(self, event=None):
-		d = wx.MessageDialog(self, "Launcher versione "+VERSION+"\n\n"+main.PACKAGE+" versione "+main.VERSION, "Versione", wx.OK)
+		d = wx.MessageDialog(self, "Launcher versione "+VERSION+"\n\n"+main.PACKAGE+" versione "+main.VERSION, "Versione", wx.OK|wx.ICON_INFORMATION)
 		d.ShowModal()
 		d.Destroy()
 
