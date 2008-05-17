@@ -22,6 +22,7 @@
 /* Begin PBXFileReference section */
 		61AEDBDA0DD5C7E000B5A5FD /* launcher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = launcher.py; sourceTree = "<group>"; };
 		61AEDBE50DD5C84A00B5A5FD /* ts4launcher */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = ts4launcher; sourceTree = "<group>"; };
+		61BCFDFA0DDF397D008A187B /* TODO */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TODO; sourceTree = "<group>"; };
 		D913BEBE0DD1E66C00095914 /* cards */ = {isa = PBXFileReference; lastKnownFileType = folder; path = cards; sourceTree = "<group>"; };
 		D913BEE90DD1E66C00095914 /* client.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = client.py; sourceTree = "<group>"; };
 		D913BEEA0DD1E66C00095914 /* deck.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = deck.py; sourceTree = "<group>"; };
@@ -56,6 +57,7 @@
 				D913BEF20DD1E66C00095914 /* protocol.py */,
 				D913BEF30DD1E66C00095914 /* README */,
 				D913BEF40DD1E66C00095914 /* server.py */,
+				61BCFDFA0DDF397D008A187B /* TODO */,
 				D913BEF50DD1E66C00095914 /* tressettenetwork4 */,
 				61AEDBE50DD5C84A00B5A5FD /* ts4launcher */,
 			);

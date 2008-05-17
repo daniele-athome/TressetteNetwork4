@@ -3,6 +3,7 @@ Cose importanti
 Punteggio in tempo reale (dove mizzica lo metto?)
 Windows: codici di errore delle socket
 Windows: codici di ritorno del processo (maledetto Winzozz!!!)
+Codici stringhe su stdout invece di exit code (sempre maledetto Winzozz!!!)
 
 Altro
 ==============================
