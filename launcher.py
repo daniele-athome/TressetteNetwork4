@@ -20,25 +20,13 @@
 #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-import sys,os,time,errno
+import sys,os
 import wx
 
-import select
 import main		# ts4 starter
 
 PACKAGE=main.PACKAGE+" Launcher"
 VERSION="0.0.1"
-
-EVT_RETURN_ID = wx.NewId()
-
-def EVT_RETURN(win, func):
-	win.Connect(-1, -1, EVT_RETURN_ID, func)
-
-class ReturnEvent(wx.PyEvent):
-	def __init__(self, data):
-		wx.PyEvent.__init__(self)
-		self.SetEventType(EVT_RETURN_ID)
-		self.data = data
 
 class ReturnDialog(wx.Dialog):
 	def __init__(self, parent, text, title, output):
@@ -360,6 +348,7 @@ class LauncherWindow(wx.Dialog):
 				self.output = self.output + out + err
 
 				d = ReturnDialog(self, text,main.PACKAGE + " terminato",self.output)
+				d.Centre()
 				d.ShowModal()
 				d.Destroy()
 
