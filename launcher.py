@@ -305,7 +305,7 @@ class LauncherWindow(wx.Dialog):
 			self.process = wx.Process(self)
 			self.process.Redirect()
 
-			args = ["python", "-u", main.__file__, "launcher"]
+			args = ["python", "-u", "\"" + main.__file__ + "\"", "launcher"]
 			args.extend(argv)
 
 			print "Executing \""+' '.join(args)+"\""
@@ -313,6 +313,7 @@ class LauncherWindow(wx.Dialog):
 
 	def OnProcessEnded(self, event):
 		retcode = event.GetExitCode()
+		print "Pid",event.GetPid(),"returned with exit code",retcode
 
 		out,err = self._read_process()
 		if self.standalone.GetValue():
