@@ -29,3 +29,4 @@ EXIT_CONN_CLOSED=1		# connessione chiusa (durante la connessione)
 EXIT_CONN_REFUSED=2		# connessione rifiutata
 EXIT_CONN_ERROR=3		# errore di connessione (anche host non risolto)
 EXIT_SYS_ERROR=4		# errore di sistema/python exception
+EXIT_BIND_ERROR=5		# errore nell'ascolto sulla porta (non autorizzato/occupata)

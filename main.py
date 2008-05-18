@@ -31,12 +31,14 @@ SIZE=800,600
 
 # codici di uscita
 # < 0: segnali
-EXIT_SUCCESS=netframework.EXIT_SUCCESS				# uscita normale
-EXIT_CONN_CLOSED=netframework.EXIT_CONN_CLOSED		# connessione chiusa (durante la connessione)
-EXIT_CONN_REFUSED=netframework.EXIT_CONN_REFUSED	# connessione rifiutata
-EXIT_CONN_ERROR=netframework.EXIT_CONN_ERROR		# errore di connessione (anche host non risolto)
-EXIT_SYS_ERROR=netframework.EXIT_SYS_ERROR			# errore di sistema/python exception
-EXIT_ARGV=5											# errore parsing argomenti
+EXIT_SUCCESS=0				# uscita normale
+EXIT_FAILURE=1				# uscita anormale
+
+def output_command(part,message):
+	'''Stampa un responso in output.'''
+
+	if 'launcher' in sys.argv[1:]:
+		print "__STATUS__:"+part.upper()+":"+message.upper()
 
 class TS4App:
 	def __init__(self):
@@ -107,7 +109,8 @@ class TS4App:
 				except:
 					traceback.print_exc()
 					print "Invalid server= argument, format is server=host:port"
-					return EXIT_ARGV
+					output_command('main','bad-argument')
+					return EXIT_FAILURE
 
 			elif arg.startswith('name='):
 				name = arg.split('=')
@@ -140,9 +143,14 @@ class TS4App:
 				# dobbiamo stare da soli
 				try:
 					return self.ts4server.start_blocking()
+				except socket.error:
+					traceback.print_exc()
+					output_command('server','bind-error')
+					return EXIT_FAILURE
 				except:
 					traceback.print_exc()
-					return EXIT_SYS_ERROR
+					output_command('server','sys-error')
+					return EXIT_FAILURE
 
 			else:
 				# insieme al client, quindi thread separato
@@ -159,7 +167,8 @@ class TS4App:
 
 		except:
 			traceback.print_exc()
-			r = EXIT_SYS_ERROR
+			output_command('client','sys-error')
+			r = EXIT_FAILURE
 
 		if not self.client:
 			# stoppa tutte le connessioni se siamo server

@@ -57,15 +57,12 @@ class TS4Server(Thread,interfaces.NetEvents):
 		self.deck.shuffle()
 
 	def start_blocking(self):
-		self.run()
-		return 0
+		return self.run()
 
 	def run(self):
 		# metti in ascolto
 		self.conn.listen(self.server[1],self.server[0])
-
-	def paint(self):
-		return list()
+		return netframework.EXIT_SUCCESS
 
 	def connected(self,conn):
 		print "(SERVER) Connected!",conn

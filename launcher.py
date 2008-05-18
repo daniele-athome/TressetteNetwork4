@@ -246,7 +246,7 @@ class LauncherWindow(wx.Dialog):
 			out = stream.read()
 
 		if stream2.CanRead():
-			err = stream.read()
+			err = stream2.read()
 
 		# mischiamo stdout e stderr, mettiamo newline se necessario
 		try:
@@ -305,7 +305,7 @@ class LauncherWindow(wx.Dialog):
 			self.process = wx.Process(self)
 			self.process.Redirect()
 
-			args = ["python", "-u", main.__file__]
+			args = ["python", "-u", main.__file__, "launcher"]
 			args.extend(argv)
 
 			print "Executing \""+' '.join(args)+"\""
@@ -314,35 +314,64 @@ class LauncherWindow(wx.Dialog):
 	def OnProcessEnded(self, event):
 		retcode = event.GetExitCode()
 
+		out,err = self._read_process()
+		if self.standalone.GetValue():
+			self.stdout.AppendText(out+err)
+		self.output = self.output + out + err
+
 		if retcode != main.EXIT_SUCCESS:
 
 			showdlg = True
 			text = main.PACKAGE+" terminato per motivi sconosciuti."
+
+			# analizza l'output
+			cause = ''
+			lines = self.output.splitlines()
+			for abc in lines:
+				# estrai linea status
+				if abc.startswith('__STATUS__'):
+					ext = abc.split(":")
+
+					try:
+						cause = ext[2]
+
+						# rimuovi lo stato dall'output
+						self.output = self.output.replace(abc,"")
+
+					except:
+						print "Launcher: Oops..."
+
+			# il trucco del minore di zero dovrebbe funzionare anche per windows
 			if retcode < main.EXIT_SUCCESS:
-				# segnale di uscita
-				text = main.PACKAGE+" terminato a causa del segnale "+str(-retcode)+"."
+				if os.name == 'nt':
+					# chissa cosa sara' stato...
+					text = main.PACKAGE+" terminato inaspettatamente."
+				else:
+					# segnale di uscita
+					text = main.PACKAGE+" terminato a causa del segnale "+str(-retcode)+"."
 
 				if self.killed: showdlg = False
 
-			elif retcode == main.EXIT_CONN_CLOSED:
-				text = u"La connessione al server di gioco è stata chiusa."
+			else:
+				if cause == 'CONNECTION-CLOSED':
+					text = u"La connessione al server di gioco è stata chiusa."
 
-			elif retcode == main.EXIT_CONN_REFUSED:
-				text = u"La connessione al server di gioco è stata rifiutata."
+				elif cause == 'CONNECTION-REFUSED':
+					text = u"La connessione al server di gioco è stata rifiutata."
 
-			elif retcode == main.EXIT_CONN_ERROR:
-				text = "Errore di connessione al server di gioco."
+				elif cause == 'CONNECT-ERROR':
+					text = "Errore di connessione al server di gioco."
 
-			elif retcode == main.EXIT_SYS_ERROR:
-				text = main.PACKAGE+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
+				elif cause == 'SYS-ERROR':
+					text = main.PACKAGE+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
 
-			elif retcode == main.EXIT_ARGV:
-				text = "Argomenti di avvio non validi."
+				elif cause == 'BAD-ARGUMENT':
+					text = "Argomenti di avvio non validi."
+
+				elif cause == 'BIND-ERROR':
+					text = "Impossibile avviare il server. Controlla che non ci sia un altro server attivo."
 
 			if showdlg:
-				out,err = self._read_process()
-				self.output = self.output + out + err
-
 				d = ReturnDialog(self, text,main.PACKAGE + " terminato",self.output)
 				d.Centre()
 				d.ShowModal()

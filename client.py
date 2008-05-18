@@ -49,11 +49,27 @@ class TS4Client(interfaces.NetEvents):
 		self.conn.register_method(protocol.READY_DISTRIB,self.ready_distrib)
 
 		# connetti al server di gioco
+		err = ''
 		if self.conn.connect(self.server[0],self.server[1]):
-			return self.conn.run()
+			ret = self.conn.run()
+
+			if ret == netframework.EXIT_CONN_CLOSED:
+				err = 'connection-closed'
+			elif ret == netframework.EXIT_CONN_REFUSED:
+				err = 'connection-refused'
+			elif ret == netframework.EXIT_CONN_ERROR:
+				err = 'connect-error'
+			elif ret == netframework.EXIT_SYS_ERROR:
+				err = 'sys-error'
 
 		else:
-			return main.EXIT_CONN_ERROR
+			err = 'connect-error'
+
+		if len(err) > 0:
+			main.output_command('client',err)
+			return main.EXIT_FAILURE
+
+		return main.EXIT_SUCCESS
 
 	def connected(self,conn):
 		print "(CLIENT) Connected!",conn
