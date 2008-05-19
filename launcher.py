@@ -363,6 +363,9 @@ class LauncherWindow(wx.Dialog):
 				elif cause == 'CONNECT-ERROR':
 					text = "Errore di connessione al server di gioco."
 
+				elif cause == 'CONNECT-TIMEOUT':
+					text = u"Il tempo di connessione al server di gioco è scaduto."
+
 				elif cause == 'SYS-ERROR':
 					text = main.PACKAGE+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
 

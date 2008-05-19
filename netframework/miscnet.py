@@ -28,11 +28,16 @@ import socket,select
 
 def _recv_timeout(the_socket,timeout=2,flags=0):
 	data=''
-	rd,wr,er = select.select([the_socket],[],[],timeout)
+	rd,wr,er = select.select([the_socket],[],[the_socket],timeout)
+
 	if len(rd) > 0:
 		data = the_socket.recv(8192,flags)
 		if len(data) == 0:
 			return None
+
+	# errorino :D
+	if len(er) > 0:
+		return None
 	return data
 
 _End="sb."

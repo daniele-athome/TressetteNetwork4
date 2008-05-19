@@ -28,6 +28,8 @@ import time,sys,socket,traceback
 import miscnet,__init__
 from threading import Thread
 
+DEFAULT_TIMEOUT=30
+
 class NetLoop:
 	'''This thread is started by the NetConnection class.
 
@@ -39,6 +41,15 @@ class NetLoop:
 		self.connection = netconnection
 		self.atexit = None
 		self.loop_func = None
+		self._return = None
+		self.timeout = NetTimeout(DEFAULT_TIMEOUT,self._cb_timeout,self.connection)
+
+	def _cb_timeout(self,conn):
+		if not conn.connected:
+			self._return = __init__.EXIT_CONN_TIMEOUT
+			conn.close()
+
+		return False
 
 	def register_atexit(self,callback,*args):
 		'''Register a method to be called at channel closure.
@@ -60,6 +71,9 @@ class NetLoop:
 	def run(self):
 		self.running = True
 		ret = __init__.EXIT_SUCCESS
+
+		self._return = None
+		self.timeout.start()
 
 		while self.running:
 
@@ -114,6 +128,9 @@ class NetLoop:
 
 		#print "(NET) Checking termination callback..."
 		if self.atexit: self.atexit[0](self.connection,*self.atexit[1])
+
+		if self._return != None:
+			ret = self._return
 
 		return ret
 

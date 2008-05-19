@@ -66,6 +66,8 @@ class TS4Client(interfaces.NetEvents):
 				err = 'connection-refused'
 			elif ret == netframework.EXIT_CONN_ERROR:
 				err = 'connect-error'
+			elif ret == netframework.EXIT_CONN_TIMEOUT:
+				err = 'connect-timeout'
 			elif ret == netframework.EXIT_SYS_ERROR:
 				err = 'sys-error'
 

@@ -30,8 +30,8 @@ from threading import Thread
 
 import os,errno
 if os.name == 'nt':
-	_IsConnected = (10022, 10056)
-	_ConnectBusy = (10035, )
+	_IsConnected = (errno.WSAEINVAL, errno.WSAEISCONN)
+	_ConnectBusy = (errno.WSAEINPROGRESS, errno.WSAEALREADY, errno.WSAEWOULDBLOCK)
 else:
 	_IsConnected = (0, errno.EISCONN)
 	_ConnectBusy = (errno.EINPROGRESS, errno.EALREADY, errno.EWOULDBLOCK)
@@ -88,7 +88,7 @@ class NetConnection:
 
 			# code taken from asyncore.py
 			err = self.socket.connect_ex((host,port))
-			print "Connect_ex errno:",err,errno.EISCONN,errno.EINPROGRESS
+			#print "(NET) Connect_ex errno:",err,errno.EISCONN,errno.EINPROGRESS
 
 			# azzo gia' connesso!
 			if err in _IsConnected:
