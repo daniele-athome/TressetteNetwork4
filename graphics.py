@@ -113,10 +113,6 @@ class Display(Menu):
 		Menu.__init__(self,pygame.display.set_mode(size))
 		pygame.display.set_caption(title)
 
-
-		# prossima destinazione
-		self.goto = None
-
 	def _update(self):
 		'''Questa funzione viene eseguita nel passaggio da un menu ad un altro.
 
