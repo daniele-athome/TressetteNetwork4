@@ -1,0 +1,4 @@
+include TODO COPYING *.bat MANIFEST.in
+graft cards
+graft metaserver
+graft TressetteNetwork4.xcodeproj
