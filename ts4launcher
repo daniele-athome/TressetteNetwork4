@@ -1,2 +1,9 @@
-#!/bin/sh
-/usr/bin/env python launcher.py $*
+#!/usr/bin/env python
+
+try:
+	import tressettenetwork4.launcher
+	tressettenetwork4.launcher.startup()
+
+except:
+	import launcher
+	launcher.startup()

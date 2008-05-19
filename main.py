@@ -24,8 +24,13 @@ import sys,os,traceback,socket,time
 from threading import Thread
 import netframework
 
-PACKAGE="TressetteNetwork4"
-VERSION="0.0.1"
+# version information
+NAME='TressetteNetwork4'
+PACKAGE=NAME.lower()
+VERSION='0.0.1'
+AUTHORS=( {'name': 'Daniele Ricci', 'email' : 'daniele.athome@gmail.com'}, )
+
+
 PORT=8154
 SIZE=800,600
 
@@ -38,7 +43,7 @@ def output_command(part,message):
 	'''Stampa un responso in output.'''
 
 	if 'launcher' in sys.argv[1:]:
-		print "__STATUS__:"+part.upper()+":"+message.upper()
+		print '__STATUS__:'+part.upper()+':'+message.upper()
 
 class TS4App:
 	def __init__(self):
@@ -202,6 +207,9 @@ class TS4App:
 		except:
 			print "Pygame not installed."
 
-if __name__ == '__main__':
+def startup():
 	app = TS4App()
 	exit(app.run(sys.argv))
+
+if __name__ == '__main__':
+	startup()

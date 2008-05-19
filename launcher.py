@@ -25,7 +25,7 @@ import wx
 
 import main		# ts4 starter
 
-PACKAGE=main.PACKAGE+" Launcher"
+NAME=main.NAME+" Launcher"
 VERSION="0.0.1"
 
 class ReturnDialog(wx.Dialog):
@@ -323,7 +323,7 @@ class LauncherWindow(wx.Dialog):
 		if retcode != main.EXIT_SUCCESS:
 
 			showdlg = True
-			text = main.PACKAGE+" terminato per motivi sconosciuti."
+			text = main.NAME+" terminato per motivi sconosciuti."
 
 			# analizza l'output
 			cause = ''
@@ -346,10 +346,10 @@ class LauncherWindow(wx.Dialog):
 			if retcode < main.EXIT_SUCCESS:
 				if os.name == 'nt':
 					# chissa cosa sara' stato...
-					text = main.PACKAGE+" terminato inaspettatamente."
+					text = main.NAME+" terminato inaspettatamente."
 				else:
 					# segnale di uscita
-					text = main.PACKAGE+" terminato a causa del segnale "+str(-retcode)+"."
+					text = main.NAME+" terminato a causa del segnale "+str(-retcode)+"."
 
 				if self.killed: showdlg = False
 
@@ -367,7 +367,7 @@ class LauncherWindow(wx.Dialog):
 					text = u"Il tempo di connessione al server di gioco è scaduto."
 
 				elif cause == 'SYS-ERROR':
-					text = main.PACKAGE+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
+					text = main.NAME+" terminato per un errore di sistema o un errore non gestito.\n\nMaggiori informazioni nei dettagli."
 
 				elif cause == 'BAD-ARGUMENT':
 					text = "Argomenti di avvio non validi."
@@ -376,7 +376,7 @@ class LauncherWindow(wx.Dialog):
 					text = "Impossibile avviare il server. Controlla che non ci sia un altro server attivo."
 
 			if showdlg:
-				d = ReturnDialog(self, text,main.PACKAGE + " terminato",self.output)
+				d = ReturnDialog(self, text,main.NAME + " terminato",self.output)
 				d.Centre()
 				d.ShowModal()
 				d.Destroy()
@@ -398,16 +398,16 @@ class LauncherWindow(wx.Dialog):
 			self.app.ExitMainLoop()
 
 	def cb_version(self, event=None):
-		d = wx.MessageDialog(self, "Launcher versione "+VERSION+"\n\n"+main.PACKAGE+" versione "+main.VERSION, "Versione", wx.OK|wx.ICON_INFORMATION)
+		d = wx.MessageDialog(self, "Launcher versione "+VERSION+"\n\n"+main.NAME+" versione "+main.VERSION, "Versione", wx.OK|wx.ICON_INFORMATION)
 		d.ShowModal()
 		d.Destroy()
 
 class TS4Launcher(wx.App):
 	def __init__(self,argv):
-		self.name = PACKAGE+" v"+VERSION
+		self.name = NAME+" v"+VERSION
 
 		wx.App.__init__(self, redirect = False)
-		wx.App.SetAppName(self,PACKAGE)
+		wx.App.SetAppName(self,NAME)
 
 	def OnInit(self):
 		window = LauncherWindow(None, wx.ID_ANY, self.name, size=(400, 400))
@@ -419,6 +419,9 @@ class TS4Launcher(wx.App):
 		self.SetTopWindow(self.window)
 		return True
 
-if __name__ == '__main__':
+def startup():
 	app = TS4Launcher(sys.argv)
 	app.MainLoop()
+
+if __name__ == '__main__':
+	startup()

@@ -97,7 +97,7 @@ class TS4Server(Thread,interfaces.NetEvents):
 		conn.user_data = {}
 		conn.user_data['state'] = PSTATE_CONNECTED
 
-		conn.send(interfaces.NetMethod(protocol.VERSION_INFO,main.PACKAGE,main.VERSION))
+		conn.send(interfaces.NetMethod(protocol.VERSION_INFO,main.NAME,main.VERSION))
 
 	def version_info(self,conn,sw_name,sw_version):
 		print "(SERVER) Version:",sw_name,sw_version

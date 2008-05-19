@@ -1,2 +1,9 @@
-#!/bin/sh
-/usr/bin/env python main.py $*
+#!/usr/bin/env python
+
+try:
+	import tressettenetwork4.main
+	tressettenetwork4.main.startup()
+
+except:
+	import main
+	main.startup()

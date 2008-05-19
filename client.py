@@ -37,7 +37,7 @@ class TS4Client(interfaces.NetEvents):
 		self.plist = ['','','','']
 		self._ending = False		# flag interno -- indica se stiamo finendo la partita
 
-		self.display = graphics.Display(size,' v'.join((main.PACKAGE,main.VERSION)))
+		self.display = graphics.Display(size,' v'.join((main.NAME,main.VERSION)))
 		self.current_menu = self.display
 
 		# registra unix signal handler
@@ -92,7 +92,7 @@ class TS4Client(interfaces.NetEvents):
 	def version_info(self,conn,sw_name,sw_version):
 		print "(CLIENT) Version:",sw_name,sw_version
 
-		conn.send(interfaces.NetMethod(protocol.VERSION_INFO,main.PACKAGE,main.VERSION))
+		conn.send(interfaces.NetMethod(protocol.VERSION_INFO,main.NAME,main.VERSION))
 
 	def version_check(self,conn,check):
 		print "(CLIENT) Version check:",check
