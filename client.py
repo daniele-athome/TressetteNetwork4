@@ -20,8 +20,7 @@
 #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
-import pygame,sys,Queue,time
-from threading import Thread
+import pygame,sys,os,signal
 import netframework,protocol,main,player,graphics,objects
 from netframework import interfaces,connection
 
@@ -40,6 +39,14 @@ class TS4Client(interfaces.NetEvents):
 
 		self.display = graphics.Display(size,' v'.join((main.PACKAGE,main.VERSION)))
 		self.current_menu = self.display
+
+		# registra unix signal handler
+		signal.signal(signal.SIGTERM,self.sig_term)
+
+	def sig_term(self,signum,stack=None):
+		main.output_command('client','terminate')
+		# bad exit... :S
+		os._exit(1)
 
 	def run(self):
 		self.conn.register_method(protocol.VERSION_INFO,self.version_info)
