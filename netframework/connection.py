@@ -27,8 +27,14 @@ import miscnet
 import loop
 import socket
 from threading import Thread
-from errno import EALREADY, EINPROGRESS, EWOULDBLOCK, ECONNRESET, \
-     ENOTCONN, ESHUTDOWN, EINTR, EISCONN, errorcode
+
+import os,errno
+if os.name == 'nt':
+	_IsConnected = (10022, 10056)
+	_ConnectBusy = (10035, )
+else:
+	_IsConnected = (0, errno.EISCONN)
+	_ConnectBusy = (errno.EINPROGRESS, errno.EALREADY, errno.EWOULDBLOCK)
 
 class NetConnection:
 	'''A network connection object.
@@ -82,16 +88,16 @@ class NetConnection:
 
 			# code taken from asyncore.py
 			err = self.socket.connect_ex((host,port))
-			print "Connect_ex errno:",err,EISCONN,EINPROGRESS
+			print "Connect_ex errno:",err,errno.EISCONN,errno.EINPROGRESS
 
 			# azzo gia' connesso!
-			if err in (0, EISCONN):
+			if err in _IsConnected:
 				self.connected = True
 				self.callbacks.connected(self)
 
 			# errori normali
-			elif err not in (EINPROGRESS, EALREADY, EWOULDBLOCK):
-				raise socket.error, (err, errorcode[err])
+			elif err not in _ConnectBusy:
+				raise socket.error, (err, errno.errorcode[err])
 
 			self.socket.setblocking(True)
 

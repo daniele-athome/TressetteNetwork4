@@ -115,11 +115,10 @@ class NetLoop:
 		#print "(NET) Checking termination callback..."
 		if self.atexit: self.atexit[0](self.connection,*self.atexit[1])
 
-		print "Exited from loop.",ret
 		return ret
 
 	def stop(self):
-		print "(NET) Terminating loop..."
+		#print "(NET) Terminating loop..."
 		self.running = False
 
 class NetTimeout(Thread):
