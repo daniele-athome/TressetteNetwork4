@@ -329,7 +329,7 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 
 		elif side == SIDE_RIGHT:
 
-			right = self.sprites()[0].rect.left
+			right = self.sprites()[0].rect.left - 5
 			bottom = self.sprites()[1].rect.bottom
 
 		# sottotitolo per side != SIDE_BOTTOM
