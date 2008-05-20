@@ -1,12 +1,18 @@
-Cose importanti
-==============================
-Punteggio in tempo reale (dove mizzica lo metto?)
-Sistema di installazione per Windows (includere Python da installazione locale?)
-
-Altro
+Release: 0.0.1-rc1
 ==============================
 Internazionalizzare (gettext o interfaccia compatibile in python)
+
+Release: 0.0.1-rc2
+==============================
+Punteggio in tempo reale (dove mizzica lo metto?)
+
+Release: 0.0.1-rc3
+==============================
 Chat manuale e automatica
+
+Release: 0.0.1
+==============================
+Sistema di installazione per Windows (includere Python da installazione locale?)
 
 Futuro
 ==============================
