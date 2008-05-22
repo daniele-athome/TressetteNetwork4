@@ -1,3 +1,23 @@
 TressetteNetwork4 - A Tressette 4-multiplayer game written in Python
 
+The project is hosted on Gna! at:
+http://gna.org/projects/tsnet4
+
 TS4 uses the StargateRPG network framework, modified a bit to work better with this project.
+The game is in Italian only.
+
+Dependencies
+======================================
+- Python >= 2.5
+ http://www.python.org/download/
+
+- Pygame >= 1.8
+ http://www.pygame.org/download.shtml
+
+- wxPython >= 2.8
+ http://www.wxpython.org/download.php
+
+Portability
+======================================
+TS4 has been tested successfully tested on Linux, Mac OS X 10.4+ and Windows XP.
+

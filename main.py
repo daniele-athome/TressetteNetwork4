@@ -25,10 +25,10 @@ from threading import Thread
 import netframework
 
 # version information
-NAME='TressetteNetwork4'
+NAME="TressetteNetwork4"
 PACKAGE=NAME.lower()
-VERSION='0.0.1'
-AUTHORS=( {'name': 'Daniele Ricci', 'email' : 'daniele.athome@gmail.com'}, )
+VERSION="0.0.1-rc2"
+AUTHORS=( {"name": "Daniele Ricci", "email" : "daniele.athome@gmail.com"}, )
 
 
 PORT=8154
@@ -182,7 +182,7 @@ class TS4App:
 		return r
 
 	def print_help(self,argv):
-		print "Usage: "+PACKAGE.lower()+" [OPTIONS...]"
+		print "Usage: "+PACKAGE+" [OPTIONS...]"
 
 		print "\nServer options:"
 		print "\tstandalone\t\tStart a standalone server"
@@ -199,7 +199,7 @@ class TS4App:
 		print "\thelp\t\t\tShow this help screen"
 
 	def print_version(self):
-		print PACKAGE+" version "+VERSION
+		print NAME+" version "+VERSION
 
 		try:
 			import pygame

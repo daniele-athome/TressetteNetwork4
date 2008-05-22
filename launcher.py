@@ -26,7 +26,7 @@ import wx
 import main		# ts4 starter
 
 NAME=main.NAME+" Launcher"
-VERSION="0.0.1"
+VERSION="0.0.1-rc1"
 
 class ReturnDialog(wx.Dialog):
 	def __init__(self, parent, text, title, output):
