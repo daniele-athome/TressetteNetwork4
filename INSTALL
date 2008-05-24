@@ -1,0 +1,27 @@
+Installing TressetteNetwork4
+========================================
+Once the game has been installed, the launcher (available on all systems) will
+provide a graphical interface to start a gaming session.
+
+Installing on Linux
+========================================
+python setup.py build
+(then su to root or use sudo)
+python setup.py install
+
+Start from terminal:
+ts4launcher
+- or -
+tressettenetwork4 standalone
+ for a standalone server.
+
+Installing on Mac OS X
+========================================
+Same as Linux, but for starting the game you can also use the application icon
+you can find in the Application folder.
+
+Installing on Windows
+========================================
+- use the installer -
+
+You can find the launcher in the Start Menu.
