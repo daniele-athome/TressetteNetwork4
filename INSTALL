@@ -17,8 +17,14 @@ tressettenetwork4 standalone
 
 Installing on Mac OS X
 ========================================
-Same as Linux, but for starting the game you can also use the application icon
-you can find in the Application folder.
+Method 1: installer package
+Mount the image file and start the installer.
+
+Method 2: source distribution
+Same as Linux.
+
+Start the game using the application icon you can find in the Application
+folder.
 
 Installing on Windows
 ========================================

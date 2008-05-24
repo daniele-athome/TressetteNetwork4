@@ -6,6 +6,7 @@ Chat manuale e automatica
 Release: 0.0.1
 ==============================
 Sistema di installazione per Windows (includere Python da installazione locale?)
+Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython)
 
 Futuro
 ==============================
