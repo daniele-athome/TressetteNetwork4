@@ -40,6 +40,7 @@ class TextLabel(pygame.sprite.Sprite):
 		self.color = color
 		self.text = text
 		self.size = size
+		self.font = miscgui.create_font(size)
 
 		self.set_position(position,rightbottom,rightlimit)
 		self.update()
@@ -50,25 +51,105 @@ class TextLabel(pygame.sprite.Sprite):
 	def set_color(self,color):
 		self.color = color
 
-	def update(self):
-		self._make_text()
+	def update(self,more_space=False,bgcolor=(0,0,0)):
+		self._make_text(more_space,bgcolor)
 
 	def set_position(self, xy, rightbottom = (None, None), rightlimit = False):
 		self.position = xy
 		self.rightbottom = rightbottom
 		self.rightlimit = rightlimit
 
-	def _make_text(self):
-		self.image = miscgui.draw_text(self.text,self.size,self.color)
+	def _make_text(self,more_space=False,bgcolor=(0,0,0)):
+		self.image = miscgui.draw_text(self.text,self.size,self.color,font=self.font,more_space=more_space,bgcolor=bgcolor)
 		self.rect = self.image.get_rect()
 
-		if self.rightbottom == (None, None):
-			self.rect.topleft = self.position
-		else:
-			self.rect.bottomright = self.rightbottom
+		self.rect.topleft = self.position
+
+		if self.rightbottom[0] != None:
+			self.rect.right = self.rightbottom[0]
+
+		if self.rightbottom[1] != None:
+			self.rect.bottom = self.rightbottom[1]
 
 		if self.rightlimit:
 			self.rect.right = self.rightlimit
+
+class TextEntry(TextLabel):
+	'''Una TextLabel modificabile dall'utente.'''
+	def __init__(self, color, text = '', position = (0,0), rightbottom = (None, None), rightlimit = False, size = TEXTBOX,show_cursor = True,bg_color=(0,0,0)):
+
+		self.bg_color = bg_color
+		self._cursor = 0
+		self.show_cursor(show_cursor)
+
+		TextLabel.__init__(self,color,text,position,rightbottom,rightlimit,size)
+
+	def set_cursor(self,n):
+		if n >= 0 and n <= len(self.text):
+			self._cursor = n
+
+	def cursor_offset(self,offset):
+		'''Somma l'offset alla posizione del cursore.'''
+		self.set_cursor(self.cursor + offset)
+
+	def cursor_next(self):
+		'''Avanza il cursore al carattere successivo.'''
+		self.cursor_offset(1)
+
+	def cursor_prev(self):
+		'''Ritorna il cursore al carattere precedente.'''
+		self.cursor_offset(-1)
+
+	def cursor_start(self):
+		'''Imposta il cursore all'inizio.'''
+		self.set_cursor(0)
+
+	def cursor_end(self):
+		'''Imposta il cursore alla fine.'''
+		self.set_cursor(len(self.text))
+
+	def show_cursor(self,bshow):
+		'''Nasconde/mostra il cursore.'''
+		self._cursor_draw = bshow
+
+	def insert_text(self,text):
+		'''Inserisce il testo alla posizione del cursore.'''
+		txt = self.text[:self._cursor]+text+self.text[self._cursor:]
+		#print "(GFX) Final text:",txt
+
+		TextLabel.set_text(self,txt)
+		self.cursor_offset(len(text))
+
+	def delete(self,backspace=False):
+		'''Rimuove un carattere alla destra del cursore.
+
+		Se backspace e' True, rimuove il carattere alla sinistra del cursore.
+		'''
+
+		if backspace:
+			if self._cursor == 0: return
+			txt = self.text[:self._cursor-1]+self.text[self._cursor:]
+			self.cursor_offset(-1)
+
+		else:
+			if self._cursor == len(self.text): return
+			txt = self.text[:self._cursor]+self.text[self._cursor+1:]
+
+		TextLabel.set_text(self,txt)
+
+	def update(self):
+		TextLabel.update(self,5,self.bg_color)
+
+		# disegna cursore
+		if self._cursor_draw:
+
+			# trova posizione dato il cursore
+			w,h = self.font.size(self.text[:self._cursor])
+
+			start = (w,0)
+			end = (w,h)
+
+			pygame.draw.line(self.image,self.color,start,end,2)
 
 class StatusText(TextLabel):
 	'''Una scritta di stato in basso a destra.'''
@@ -81,10 +162,10 @@ class StatusText(TextLabel):
 	def set_text(self,text):
 		self.text = text
 
-	def _make_text(self):
+	def _make_text(self,more_space=False,bgcolor=None):
 		TextLabel._make_text(self)
 		self.rect.bottom = self.screen_size[1]
-		self.rect.right = self.screen_size[0]
+		self.rect.right = self.screen_size[0]-5
 
 class PositionButton(pygame.sprite.Sprite):
 	'''Un singolo pulsante per il selettore di posizione.'''

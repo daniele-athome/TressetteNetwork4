@@ -371,3 +371,9 @@ class TS4Client(interfaces.NetEvents):
 
 		if isinstance(self.current_menu,graphics.GameTable):
 			self.current_menu.update_miniscore((points[0][0],points[1][0]))
+
+	def set_chat(self,text):
+		'''Imposta il messaggio della chat.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+			self.current_menu.set_chat(text)

@@ -259,6 +259,10 @@ class GameTable(Menu):
 		self.updater.add(*self.miniscore)
 		self.update_miniscore()
 
+		# chat
+		self.chat = objects.TextEntry(WHITE,'',(3,0),(None,self.screen.get_size()[1]-2),size=objects.TEXTBOX,bg_color=GREEN)
+		self.updater.add(self.chat)
+
 	def update_miniscore(self,points=(0,0)):
 		'''Aggiorna il miniscore.'''
 
@@ -279,6 +283,11 @@ class GameTable(Menu):
 
 			if isinstance(sprite,objects.Card):
 				sprite.set_card_num(card_num)
+
+	def set_chat(self, text):
+		'''Imposta il testo della chat.'''
+
+		self.chat.set_text(text)
 
 	def throw_card(self, position, card_num):
 		'''Rimuove una carta dalla mano e la mette in campo.
@@ -513,6 +522,8 @@ if __name__ == '__main__':
 			if not p.first:
 				del cards[0]
 				p.back_all_cards(p.num)
+				#p.chat.insert_text("ciao")
+				p.chat.delete(False)
 				p.num = p.num + 1
 				if p.num > 3: p.num = 0
 				p.first = True
@@ -585,6 +596,8 @@ if __name__ == '__main__':
 		sp.image.set_alpha(150)
 		p.updater.add(sp)
 		"""
+		p.set_chat("daniele!")
+		p.chat.set_cursor(5)
 		p.updater.add(p.score)
 
 	while True:

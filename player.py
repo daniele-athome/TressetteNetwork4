@@ -85,6 +85,7 @@ class ServerPlayer(Player):
 
 	def _register_methods(self):
 		self.conn.register_method(protocol.THROW_CARD,self._card_thrown)
+		self.conn.register_method(protocol.CHAT,self._chat)
 
 	def _card_thrown(self,conn,card_num):
 		'''Callback carta gettata a terra da un giocatore.'''
@@ -106,6 +107,17 @@ class ServerPlayer(Player):
 				return
 
 		conn.send(interfaces.NetMethod(protocol.THROW_CARD,self.position,card_num,protocol.ERR_REFUSED))
+
+	def _chat(self,conn,message):
+		'''Callback messaggio di chat broadcast.'''
+
+		# spedisci a tutti con prefisso
+
+		if self.state == STATE_TURN:
+			conn.server.send_all(interfaces.NetMethod(protocol.CHAT,': '.join((self.name,message))))
+
+		else:
+			conn.send(interfaces.NetMethod(protocol.CHAT,message,ERR_REFUSED))
 
 	def set_state(self,state):
 		# richiama il super prima di tutto
@@ -204,6 +216,7 @@ class ClientPlayer(Player):
 		self.conn.register_method(protocol.END_HAND,self._end_hand)
 		self.conn.register_method(protocol.GAME_POINTS,self._game_points)
 		self.conn.register_method(protocol.END_GAME,self._end_game)
+		self.conn.register_method(protocol.CHAT,self._chat)
 
 	def _unregister_methods(self):
 		self.conn.unregister_method(protocol.CARDS_DISTRIB)
@@ -217,6 +230,10 @@ class ClientPlayer(Player):
 		self.conn.unregister_method(protocol.END_HAND)
 		self.conn.unregister_method(protocol.GAME_POINTS)
 		self.conn.unregister_method(protocol.END_GAME)
+		self.conn.unregister_method(protocol.CHAT)
+
+	def _chat(self,conn,message):
+		self.gui.set_chat(message)
 
 	def _end_game(self,conn,winner_team):
 		print "(CLIENT) Team",winner_team,"won this game!"
