@@ -23,6 +23,8 @@
 import pygame,time,deck
 import miscgui,objects
 
+BLACK=(0,0,0)
+WHITE=(255,255,255)
 GREEN=(0,180,0)
 LGREEN=(123,240,123)
 
@@ -37,7 +39,7 @@ class Menu:
 		self.screen = screen
 
 		# testo di stato
-		self.status = objects.StatusText((0,0,0), self.screen.get_size(), status_text)
+		self.status = objects.StatusText(BLACK, self.screen.get_size(), status_text)
 
 		# callback
 		self.callback = callback
@@ -242,8 +244,19 @@ class GameTable(Menu):
 		# aggiungi la scritta di stato
 		self.updater.add(self.status)
 
-		self.score = objects.MultilineText((400,400),GREEN,LGREEN,(0,0,0),"Punteggio","",(self.screen.get_size()[0]//2,self.screen.get_size()[1]//2))
-		self.last = objects.TableReplay(GREEN,LGREEN,(0,0,0),"Ultime carte",(self.screen.get_size()[0]//2,self.screen.get_size()[1]//2))
+		self.score = objects.MultilineText((400,400),GREEN,LGREEN,BLACK,"Punteggio","",(self.screen.get_size()[0]//2,self.screen.get_size()[1]//2))
+		self.last = objects.TableReplay(GREEN,LGREEN,BLACK,"Ultime carte",(self.screen.get_size()[0]//2,self.screen.get_size()[1]//2))
+
+		self.miniscore = (objects.TextLabel(WHITE,'',(5,5),size=objects.TEXTBOX-5),
+						objects.TextLabel(WHITE,'',(5,5+objects.TEXTBOX2),size=objects.TEXTBOX-5))
+		self.updater.add(*self.miniscore)
+		self.update_miniscore()
+
+	def update_miniscore(self,points=(0,0)):
+		'''Aggiorna il miniscore.'''
+
+		self.miniscore[0].set_text(self.plist[0]+"/"+self.plist[2]+": "+str(points[0]))
+		self.miniscore[1].set_text(self.plist[1]+"/"+self.plist[3]+": "+str(points[1]))
 
 	def reveal_card(self, position, card_num):
 		'''Rivela una carta dell'avversario nella posizione data.
@@ -343,7 +356,7 @@ class GameTable(Menu):
 			self.groups[side].title.set_color((255,0,0))
 
 		else:
-			self.groups[side].title.set_color((0,0,0))
+			self.groups[side].title.set_color(BLACK)
 
 	def get_mouse_over(self,mousepos):
 		'''Restituisce il valore della carta con il mouse sopra.'''
@@ -447,7 +460,7 @@ class StatisticsMenu(Menu):
 		self.screen.blit(self.bg,(0,0))
 
 		# multiline text per le statistiche
-		self.multitext = objects.MultilineText((600,500), GREEN, LGREEN, (0,0,0), "Fine partita", self._make_text(), (self.screen.get_size()[0]//2, self.screen.get_size()[1]//2))
+		self.multitext = objects.MultilineText((600,500), GREEN, LGREEN, BLACK, "Fine partita", self._make_text(), (self.screen.get_size()[0]//2, self.screen.get_size()[1]//2))
 
 		# ambiente gruppo di sprite
 		self.updater = pygame.sprite.OrderedUpdates()
@@ -550,9 +563,9 @@ if __name__ == '__main__':
 		p.num = 0
 		if len(sys.argv) > 1:
 			if sys.argv[1] == 'replay':
-				p.score = objects.TableReplay(GREEN,LGREEN,(0,0,0),"Ultime carte",(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2),d.extract(4),0)
+				p.score = objects.TableReplay(GREEN,LGREEN,BLACK,"Ultime carte",(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2),d.extract(4),0)
 		else:
-			p.score = objects.MultilineText((400,400),GREEN,LGREEN,(0,0,0),"Punteggio",(),(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2))
+			p.score = objects.MultilineText((400,400),GREEN,LGREEN,BLACK,"Punteggio",(),(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2))
 			points = [23,15]
 			p.score.set_text( ( ("Squadra 1-3","Squadra 2-4"), (str(points[0]),str(points[1])) ) )
 		p.updater.add(p.score)

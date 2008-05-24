@@ -365,3 +365,9 @@ class TS4Client(interfaces.NetEvents):
 			return self.current_menu.get_side_from_position(position)
 
 		return -1
+
+	def update_miniscore(self,points):
+		'''Aggiorna il miniscore.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+			self.current_menu.update_miniscore((points[0][0],points[1][0]))

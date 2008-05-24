@@ -244,6 +244,7 @@ class ClientPlayer(Player):
 	def _update_points(self,conn,points):
 		print "(CLIENT) Score update:",points
 		self.stats.hand_update(points)
+		self.gui.update_miniscore(points)
 
 	def _end_hand(self,conn):
 		print "(CLIENT) End hand!"
