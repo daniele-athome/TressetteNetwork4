@@ -241,6 +241,13 @@ class GameTable(Menu):
 		self.bg.fill(GREEN)
 		self.screen.blit(self.bg,(0,0))
 
+		# sfondo trasparente
+		self.bgdark = pygame.sprite.Sprite()
+		self.bgdark.image = pygame.Surface(screen.get_size())
+		self.bgdark.rect = self.bgdark.image.get_rect()
+		self.bgdark.image.fill(BLACK)
+		self.bgdark.image.set_alpha(150)
+
 		# aggiungi la scritta di stato
 		self.updater.add(self.status)
 
@@ -406,9 +413,11 @@ class GameTable(Menu):
 
 		if cards == None:
 			self.last.kill()
+			self.bgdark.kill()
 
 		else:
 			self.last.set_cards(cards,self.get_side_from_position(last))
+			self.updater.add(self.bgdark)
 			self.updater.add(self.last)
 
 	def menu(self):
@@ -568,6 +577,13 @@ if __name__ == '__main__':
 			p.score = objects.MultilineText((400,400),GREEN,LGREEN,BLACK,"Punteggio",(),(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2))
 			points = [23,15]
 			p.score.set_text( ( ("Squadra 1-3","Squadra 2-4"), (str(points[0]),str(points[1])) ) )
+		# background nero
+		sp = pygame.sprite.Sprite()
+		sp.image = pygame.Surface(p.screen.get_size())
+		sp.rect = sp.image.get_rect()
+		sp.image.fill(BLACK)
+		sp.image.set_alpha(150)
+		p.updater.add(sp)
 		p.updater.add(p.score)
 
 	while True:

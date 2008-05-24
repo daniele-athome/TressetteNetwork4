@@ -12,6 +12,5 @@ Futuro
 Metaserver per registrare i server di gioco
 Gestione URL tressette://server:porta o tressette://servername (da metaserver)
 Centrare carte quando vengono rimosse
-Effetti grafici: scurisci sfondo quando ci sono multilineText attive
 Protocol: TURN e STATE_TURN sono ridondanti
 Internazionalizzare (gettext o interfaccia compatibile in python)
