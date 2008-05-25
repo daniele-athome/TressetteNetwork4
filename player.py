@@ -38,12 +38,13 @@ class Player:
 	Metodi comuni sia per il server che per il client.
 	'''
 
-	def __init__(self,name,position,conn,state=STATE_WAIT):
+	def __init__(self,name,position,conn,manualchat=False,state=STATE_WAIT):
 		self.name = name
 		self.position = position
 		self.conn = conn
 		self.state = state
 		self.mycards = []
+		self.manualchat = manualchat
 
 		self._register_methods()
 
@@ -95,6 +96,11 @@ class ServerPlayer(Player):
 
 			if self.server.verify_card(self.mycards,card_num):
 
+				# parla
+				if not self.manualchat:
+					# chat automatica, diffusione insieme alla carta
+					self._chat(None,self.chat_message(card_num))
+
 				# rimuovi la carta dalle mani
 				self.mycards.remove(card_num)
 
@@ -108,16 +114,82 @@ class ServerPlayer(Player):
 
 		conn.send(interfaces.NetMethod(protocol.THROW_CARD,self.position,card_num,protocol.ERR_REFUSED))
 
+	def chat_message(self,card_num):
+		'''Costruisce un messaggio di chat automatico.'''
+
+		# in caso di nessun caso :P
+		ret = "non dice niente."
+
+		# estrai tutte le carte di quel seme dalle carte in mano
+		cd = deck.get_values(deck.seem_cards(self.mycards,card_num))
+		print "(SERVER) Same seem list:",cd
+
+		# conta le carte da tressette
+		tscards = deck.get_tressette_cards(cd)
+		print "(SERVER) Tressette list:",tscards
+
+		# abbiamo altre carte di quel seme
+		count = len(cd) - 1
+		s,v = deck.get_card(card_num)
+
+		# caso 1: carte finite
+		if count <= 0:
+			ret = "volo!"
+
+		# caso 2: carte non finite, determina se dichiarare una carta da tressette
+		else:
+
+			try:
+				# caso 2a: una sola carta da tressette, dichiarala se non la stiamo gettando
+				if len(tscards) == 1:
+					if v not in tscards:
+						ret = "ho "
+						if tscards[0] == 1:
+							ret = ret + "l'"
+						else:
+							ret = ret + "il "
+
+						ret = ret + deck.get_card_name(tscards[0]) + "."
+
+					else:
+						raise
+
+				# caso 2b: due carte da tressette; diciamo quello ke vogliamo
+				elif len(tscards) == 2:
+					if tscards == [1,3] or tscards == [3,1]:
+						ret = "voglio il "+deck.get_card_name(2)+"."
+					elif tscards == [1,2] or tscards == [2,1]:
+						ret = "voglio il "+deck.get_card_name(3)+"."
+					elif tscards == [2,3] or tscards == [3,2]:
+						ret = "voglio l'"+deck.get_card_name(1)+"."
+
+				else:
+					raise
+
+			except:
+				if count == 1:
+					ret = "un'altra."
+
+				else:
+					ret = "altre "+str(count)+"."
+
+		# caso 1: due carte da tressette. Se card_num e' una carta da tressette, allora "voglio", altrimenti, "ho il 25/21/28"
+		# TODO
+
+		return ret
+
 	def _chat(self,conn,message):
 		'''Callback messaggio di chat broadcast.'''
 
 		# spedisci a tutti con prefisso
-
-		if self.state == STATE_TURN:
-			conn.server.send_all(interfaces.NetMethod(protocol.CHAT,': '.join((self.name,message))))
+		print "Chat:",self.state,self.manualchat,conn,self.server.table.count(0)
+		if self.state == STATE_TURN and (self.manualchat or conn == None) and self.server.table.count(0) >= 4:
+			# se chat manuale verifica se possiamo inviare (anche dopo carta gettata)
+			self.conn.server.send_all(interfaces.NetMethod(protocol.CHAT,': '.join((self.name,message))))
 
 		else:
-			conn.send(interfaces.NetMethod(protocol.CHAT,message,ERR_REFUSED))
+			if conn != None:
+				conn.send(interfaces.NetMethod(protocol.CHAT,message,ERR_REFUSED))
 
 	def set_state(self,state):
 		# richiama il super prima di tutto
@@ -187,8 +259,8 @@ class ServerPlayer(Player):
 
 class ClientPlayer(Player):
 
-	def __init__(self,name,position,conn,state=STATE_WAIT):
-		Player.__init__(self,name,position,conn,state)
+	def __init__(self,name,position,conn,state=STATE_WAIT,manualchat=False):
+		Player.__init__(self,name,position,conn,state,manualchat)
 
 		self.hand_position = -1		# giocatore di mano
 		self.last_hand_position = -1	# giocatore di mano giro precedente
@@ -397,7 +469,7 @@ class ClientPlayer(Player):
 			self.stats.hand_begin()
 
 			# vai al tavolo di gioco, mostrando la nostre carte sul tavolo
-			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist)
+			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist,self.manualchat)
 
 			# nascondi lo score board (se presente)
 			self.gui.update_score_board()

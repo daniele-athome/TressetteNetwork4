@@ -207,7 +207,7 @@ class SelectorMenu(Menu):
 
 class GameTable(Menu):
 
-	def __init__(self, screen, callback = None, status_text = '', my_position = 0, my_cards = [], plist = ('','','','')):
+	def __init__(self, screen, callback = None, status_text = '', my_position = 0, my_cards = [], plist = ('','','',''), show_cursor = False):
 		'''Crea un tavolo da gioco.
 
 		my_position: posizione globale del nostro client
@@ -260,7 +260,7 @@ class GameTable(Menu):
 		self.update_miniscore()
 
 		# chat
-		self.chat = objects.TextEntry(WHITE,'',(3,0),(None,self.screen.get_size()[1]-2),size=objects.TEXTBOX,bg_color=GREEN)
+		self.chat = objects.TextEntry(WHITE,'',(3,0),(None,self.screen.get_size()[1]-2),size=objects.TEXTBOX,show_cursor=show_cursor,bg_color=GREEN)
 		self.updater.add(self.chat)
 
 	def update_miniscore(self,points=(0,0)):

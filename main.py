@@ -49,6 +49,7 @@ class TS4App:
 	def __init__(self):
 		# argomenti predefiniti
 		self.size = SIZE
+		self.manualchat = False
 
 		# se siamo su windows, prendi hostname come nome
 		if os.name == "nt":
@@ -74,6 +75,9 @@ class TS4App:
 		self.standalone = False
 
 	def run(self,argv):
+
+		self.print_version()
+
 		# parsa argv
 		for arg in argv[1:]:
 			if arg.startswith('size='):
@@ -121,6 +125,15 @@ class TS4App:
 				name = arg.split('=')
 				if len(name[1]) > 0: self.name = name[1]
 
+			elif arg.startswith('chat='):
+				name = arg.split('=')
+				if name[1].lower() == 'manual':
+					self.manualchat = True
+				elif name[1].lower() != 'auto':
+					print "Invalid chat= argument, format is chat=auto|manual"
+					output_command('main','bad-argument')
+					return EXIT_FAILURE
+
 			elif arg == 'standalone':
 				self.standalone = True
 
@@ -128,8 +141,6 @@ class TS4App:
 				self.print_version()
 				self.print_help(argv)
 				return EXIT_SUCCESS
-
-		self.print_version()
 
 		if 'version' in argv[1:]:
 			return EXIT_SUCCESS
@@ -167,7 +178,7 @@ class TS4App:
 		try:
 			# il client si connettera' al giusto server...
 			import client
-			self.manager = client.TS4Client(self,self.name,self.server,self.size)
+			self.manager = client.TS4Client(self,self.name,self.server,self.size,self.manualchat)
 			r = self.manager.run()
 
 		except:

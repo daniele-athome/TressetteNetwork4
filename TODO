@@ -1,7 +1,8 @@
 Release: 0.0.1-rc3
 ==============================
-Cambio sistema versione: 0.0.1 -> 0.1 (piu' semplice?)
-Chat manuale e automatica
+Chat manuale: interattivita' da tastiera e da perfezionare chat dopo turno
+Buggone: se chiude la connessione il giocatore in turno, gli altri client rimangono attivi. BOZZAAAA!!!
+Launcher: opzione client per chat manuale
 
 Release: 0.0.1
 ==============================

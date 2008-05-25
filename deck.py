@@ -82,7 +82,7 @@ def get_card(card_num,num_per_seem=DEFAULT_NUM_PER_SEEM):
 	'''Restituisce una tupla contenente il numero del seme ed il valore nominale della carta.'''
 
 	# seme: card_num / num_per_seem
-	seem = int(card_num / num_per_seem)
+	seem = card_num // num_per_seem
 
 	# valore: card_num % num_per_seem
 	value = card_num % num_per_seem
@@ -108,6 +108,43 @@ def sort_cards(cards):
 
 	# un gioco da ragazzi :P (ma va a cagare n'altra volta!)
 	return sorted(cards)
+
+def seem_cards(cards,ref_card,num_per_seem=DEFAULT_NUM_PER_SEEM):
+	'''Restituisce le carte con il seme dato.'''
+
+	ret = []
+	ref = get_card(ref_card)
+
+	for c in cards:
+		ext = get_card(c)
+		if ext[0] == ref[0]:
+			ret.append(c)
+
+	return ret
+
+def get_values(cards,num_per_seem=DEFAULT_NUM_PER_SEEM):
+	'''Restituisce i valori nominali delle carte.'''
+
+	ret = []
+	for c in cards:
+		n = c % num_per_seem
+		if n == 0: n = 10
+		ret.append(n)
+
+	return ret
+
+def get_tressette_cards(cards,num_per_seem=DEFAULT_NUM_PER_SEEM):
+	'''Restituisce una lista con le carte da tressette.
+
+	Nota: cards contiene solo i valori nominali!!!
+	'''
+
+	ret = []
+	for c in cards:
+		if c in (1,2,3):
+			ret.append(c)
+
+	return ret
 
 if __name__ == '__main__':
 	a = Deck(4,10)

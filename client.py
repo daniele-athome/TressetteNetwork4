@@ -26,11 +26,12 @@ from netframework import interfaces,connection
 
 class TS4Client(interfaces.NetEvents):
 
-	def __init__(self,app,name,server,size):
+	def __init__(self,app,name,server,size,manualchat):
 
 		self.app = app
 		self.server = server
 		self.name = name
+		self.manualchat = manualchat
 		self.conn = connection.NetConnection(self,self.game_loop)
 		self.player = None
 		self.join_sent = False
@@ -129,7 +130,7 @@ class TS4Client(interfaces.NetEvents):
 			if name == self.name:
 				if self.join_sent and self.player == None:
 					# abbiamo il posto! possiamo creare il Player in stato WAIT...
-					self.player = player.ClientPlayer(self.name,position,self.conn)
+					self.player = player.ClientPlayer(self.name,position,self.conn,manualchat=self.manualchat)
 					self.player.set_gui(self)
 
 				else:
