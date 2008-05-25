@@ -300,9 +300,12 @@ class ClientPlayer(Player):
 		self.gui.highlight_name(0,True)
 		self.gui.highlight_position(-1)
 
+		# rimuovi chat
+		self.gui.set_chat("")
+
 		# rimuovi etichette accusi
 		for i in range(0,4):
-			self.gui.set_player_subtitle(i,'')
+			self.gui.set_player_subtitle(i,"")
 
 		# hack per ricominciare la mano
 		self.gui.ready_distrib(None,None)
