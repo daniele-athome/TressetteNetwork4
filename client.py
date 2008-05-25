@@ -377,4 +377,10 @@ class TS4Client(interfaces.NetEvents):
 		'''Imposta il messaggio della chat.'''
 
 		if isinstance(self.current_menu,graphics.GameTable):
-			self.current_menu.set_chat(text)
+			self.current_menu.chat.set_text(text)
+
+	def get_chat(self):
+		'''Restituisce il messaggio corrente della chat.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+			self.current_menu.chat.get_text()

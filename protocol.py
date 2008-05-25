@@ -33,6 +33,7 @@ PART='part'									# logout giocatore
 READY_DISTRIB='ready-distribution'		# pronti per cominciare la distribuzione delle carte!
 CARDS_DISTRIB='cards-distribution'		# richiedi carte/invio delle carte a un giocatore
 CHAT='chat'								# manda/ricevi messaggio di chat (in ricezione la stringa contiene anche nome:)
+REQ_CHAT='request-chat'					# richiedi chat dal giocatore che ha cominciato il giro
 
 THROW_CARD='throw-card'					# getta carta a terra! questo comando ha l'argomento position in piu' quando viene spedito dal server
 TURN='turn'								# il turno e' del giocatore position

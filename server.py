@@ -243,6 +243,9 @@ class TS4Server(Thread,interfaces.NetEvents):
 			self.current_order = self._rotate([0,1,2,3],position)
 			self.players[position].set_state(player.STATE_TURN)
 
+			for p in self.players:
+				p.cancel_chat_pending()
+
 			# manda messaggio di chat vuoto per svuotare la chat della mano precedente
 			self.conn.send_all(interfaces.NetMethod(protocol.CHAT,''))
 

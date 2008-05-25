@@ -48,6 +48,9 @@ class TextLabel(pygame.sprite.Sprite):
 	def set_text(self,text):
 		self.text = text
 
+	def get_text(self):
+		return self.text
+
 	def set_color(self,color):
 		self.color = color
 
@@ -158,9 +161,6 @@ class StatusText(TextLabel):
 
 		self.screen_size = screen_size
 		TextLabel.__init__(self, color, text)
-
-	def set_text(self,text):
-		self.text = text
 
 	def _make_text(self,more_space=False,bgcolor=None):
 		TextLabel._make_text(self)

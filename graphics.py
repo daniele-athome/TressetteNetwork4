@@ -284,11 +284,6 @@ class GameTable(Menu):
 			if isinstance(sprite,objects.Card):
 				sprite.set_card_num(card_num)
 
-	def set_chat(self, text):
-		'''Imposta il testo della chat.'''
-
-		self.chat.set_text(text)
-
 	def throw_card(self, position, card_num):
 		'''Rimuove una carta dalla mano e la mette in campo.
 
@@ -578,7 +573,7 @@ if __name__ == '__main__':
 		d.shuffle()
 		cards = deck.sort_cards(d.extract(10))
 
-		p = GameTable(a.screen,callback_ciao,"Prova testo",0,list(cards),("daniele","simone","ilaria","valerio"))
+		p = GameTable(a.screen,callback_ciao,"Prova testo",0,list(cards),("daniele","simone","ilaria","valerio"),show_cursor=True)
 		p.first = True
 		p.num = 0
 		if len(sys.argv) > 1:
@@ -596,7 +591,7 @@ if __name__ == '__main__':
 		sp.image.set_alpha(150)
 		p.updater.add(sp)
 		"""
-		p.set_chat("daniele!")
+		p.chat.set_text("daniele!")
 		p.chat.set_cursor(5)
 		p.updater.add(p.score)
 
