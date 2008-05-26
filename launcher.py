@@ -433,9 +433,9 @@ class TS4Launcher(wx.App):
 		self.SetTopWindow(self.window)
 		return True
 
-def startup():
+def main():
 	app = TS4Launcher(sys.argv)
 	app.MainLoop()
 
 if __name__ == '__main__':
-	startup()
+	main()

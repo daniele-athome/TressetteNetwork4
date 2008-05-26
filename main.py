@@ -218,9 +218,9 @@ class TS4App:
 		except:
 			print "Pygame not installed."
 
-def startup():
+def main():
 	app = TS4App()
 	exit(app.run(sys.argv))
 
 if __name__ == '__main__':
-	startup()
+	main()

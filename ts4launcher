@@ -2,8 +2,8 @@
 
 try:
 	import tressettenetwork4.launcher
-	tressettenetwork4.launcher.startup()
+	tressettenetwork4.launcher.main()
 
 except:
 	import launcher
-	launcher.startup()
+	launcher.main()
