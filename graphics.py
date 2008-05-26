@@ -434,15 +434,13 @@ class GameTable(Menu):
 
 				if event.type == pygame.KEYDOWN:
 
-					key = None
-					if event.key == pygame.K_SPACE:
-						key = 'space'
-						#print "(GFX) Pressed spacebar"
-					elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
-						key = 'cancel'
-						#print "(GFX) Pressed cancel"
+					if not self.chat.process_event(event):
 
-					if key: self.callback(key)
+						key = None
+						if event.key == pygame.K_ESCAPE:
+							key = 'escape'
+
+						if key: self.callback(key)
 
 				if event.type == pygame.MOUSEBUTTONDOWN:
 
@@ -594,6 +592,8 @@ if __name__ == '__main__':
 		p.chat.set_text("daniele!")
 		p.chat.set_cursor(5)
 		p.updater.add(p.score)
+
+	pygame.key.set_repeat(400,50)
 
 	while True:
 		goto = p.menu()

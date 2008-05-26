@@ -167,6 +167,8 @@ class TS4Client(interfaces.NetEvents):
 
 		elif isinstance(self.current_menu,graphics.GameTable):
 
+			print "GAME ENDED!",self._ending
+
 			# in gioco, annulla partita
 			if not self._ending:
 				self.goto_menu("exit")
@@ -383,4 +385,10 @@ class TS4Client(interfaces.NetEvents):
 		'''Restituisce il messaggio corrente della chat.'''
 
 		if isinstance(self.current_menu,graphics.GameTable):
-			self.current_menu.chat.get_text()
+			return self.current_menu.chat.get_text()
+
+	def activate_chat(self,bvalue):
+		'''Attiva/Disattiva la chat entry.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+			self.current_menu.chat.show_cursor(bvalue)

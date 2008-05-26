@@ -125,14 +125,13 @@ class ServerPlayer(Player):
 
 		# spedisci a tutti con prefisso
 		print "Chat:",self.state,self.chat_pending,self.server.table.count(0)
+		print "Data:",self.name,message
 		if self.state == STATE_TURN or self.server.table.count(0) >= 3 or self.chat_pending:
-			# se chat manuale verifica se possiamo inviare (anche dopo carta gettata)
 			self.chat_pending = False
 			self.conn.server.send_all(interfaces.NetMethod(protocol.CHAT,': '.join((self.name,message))))
 
 		else:
-			if conn != None:
-				conn.send(interfaces.NetMethod(protocol.CHAT,message,protocol.ERR_REFUSED))
+			conn.send(interfaces.NetMethod(protocol.CHAT,message,protocol.ERR_REFUSED))
 
 	def set_state(self,state):
 		# richiama il super prima di tutto
@@ -255,8 +254,16 @@ class ClientPlayer(Player):
 
 	def _req_chat(self,conn,position):
 		'''Callback richiesta di chat da position.'''
-		# TODO
 		print "(CLIENT) Chat request by",position
+
+		if self.manualchat:
+			# abilita eventi chat entry
+			self.gui.activate_chat(True)
+		else:
+			# chat automatica
+			card_num = self.current_last[self.gui.get_side_from_position(self.position)]
+			if card_num > 0:
+				conn.send(interfaces.NetMethod(protocol.CHAT,self.chat_message(card_num)))
 
 	def _chat(self,conn,message,error=None):
 		if error == None:
@@ -337,6 +344,10 @@ class ClientPlayer(Player):
 		if position != self.position:
 			self.gui.set_status(' '.join((self.gui.get_name_from_position(position),"sta giocando..."))  )
 
+		else:
+			if self.hand_position == self.position:
+				self.gui.activate_chat(self.manualchat)
+
 	def _card_thrown(self,conn,position,card_num,error=None):
 		print "(CLIENT PLAYER) Card thrown by",position,"card",card_num,"error",error
 
@@ -359,6 +370,7 @@ class ClientPlayer(Player):
 					msg = ''
 					if self.manualchat:
 						msg = self.gui.get_chat()
+						self.gui.activate_chat(False)
 					else:
 						msg = self.chat_message(card_num)
 
@@ -505,7 +517,7 @@ class ClientPlayer(Player):
 			self.stats.hand_begin()
 
 			# vai al tavolo di gioco, mostrando la nostre carte sul tavolo
-			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist,self.manualchat)
+			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist,False)
 
 			# nascondi lo score board (se presente)
 			self.gui.update_score_board()
@@ -521,7 +533,7 @@ class ClientPlayer(Player):
 				self.gui.activate_keyboard(None)
 
 		# visualizza ultima
-		elif button == 'cancel':
+		elif button == 'escape':
 			self.gui.toggle_last(self.last_cards,self.last_hand_position)
 
 	def _send_card(self,card_num):

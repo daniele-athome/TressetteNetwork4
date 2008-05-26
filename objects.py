@@ -93,7 +93,7 @@ class TextEntry(TextLabel):
 
 	def cursor_offset(self,offset):
 		'''Somma l'offset alla posizione del cursore.'''
-		self.set_cursor(self.cursor + offset)
+		self.set_cursor(self._cursor + offset)
 
 	def cursor_next(self):
 		'''Avanza il cursore al carattere successivo.'''
@@ -153,6 +153,61 @@ class TextEntry(TextLabel):
 			end = (w,h)
 
 			pygame.draw.line(self.image,self.color,start,end,2)
+
+	def process_event(self,event):
+		'''Processa l'evento della tastiera passato.
+
+		Restituisce False se l'evento non e' stato processato.
+		'''
+
+		if not self._cursor_draw: return False
+
+		blacklist = ( "\t", "\n", "\r", "\b" )
+
+		ret = False
+		if event.key == pygame.K_BACKSPACE:
+			self.delete(True)
+			ret = True
+
+		elif event.key == pygame.K_DELETE:
+			self.delete(False)
+			ret = True
+
+		elif event.key == pygame.K_LEFT:
+
+			if sys.platform == "darwin":
+				# modificatori Mac OS X
+				# TODO
+				pass
+
+			self.cursor_prev()
+			ret = True
+
+		elif event.key == pygame.K_RIGHT:
+
+			if sys.platform == "darwin":
+				# modificatori Mac OS X
+				# TODO
+				pass
+
+			self.cursor_next()
+			ret = True
+
+		elif event.key == pygame.K_END:
+			self.cursor_end()
+			ret = True
+
+		elif event.key == pygame.K_HOME:
+			self.cursor_start()
+			ret = True
+
+		else:
+			if len(event.unicode) == 1:
+				if event.unicode not in blacklist:
+					self.insert_text(event.unicode)
+					ret = True
+
+		return ret
 
 class StatusText(TextLabel):
 	'''Una scritta di stato in basso a destra.'''
