@@ -27,7 +27,7 @@ import netframework
 # version information
 NAME="TressetteNetwork4"
 PACKAGE=NAME.lower()
-VERSION="0.0.1-rc3"
+VERSION="0.0.1-rc4"
 AUTHORS=( {"name": "Daniele Ricci", "email" : "daniele.athome@gmail.com"}, )
 
 

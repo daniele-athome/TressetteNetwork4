@@ -1,12 +1,15 @@
-Release: 0.0.1-rc3
+Release: 0.0.1-rc4
 ==============================
-Chat: testare chat dopo turno; la chat automatica fa schifo!
-Launcher: opzione client per chat manuale
+Richiesta chat dopo turno
 
-Release: 0.0.1
+Release 0.0.1
 ==============================
 Sistema di installazione per Windows (includere Python da installazione locale?)
 Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython)
+
+Release: 0.0.2
+==============================
+Perfezionare chat automatica
 
 Futuro
 ==============================
