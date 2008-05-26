@@ -51,6 +51,7 @@ class ReturnDialog(wx.Dialog):
 		#self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnPaneChanged, detail)
 
 		# pannello con sizer del collapsible
+		# MANNAGGIA AL COLLAPSIBLE!!! MORTACCI SUA CE FOSSE UN MODO PER FALLO FUNZIONA'!!!!
 		#detail_panel = detail.GetPane()
 		#detail_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -167,6 +168,15 @@ class LauncherWindow(wx.Dialog):
 
 		self.client_frame.Add(line2,0,wx.EXPAND|wx.ALL-wx.BOTTOM,10)
 
+		# linea 3: checkbox "autochat"
+		line3 = wx.BoxSizer(wx.HORIZONTAL)
+
+		# checkbox "autochat"
+		self.autochat = wx.CheckBox(panel, wx.ID_ANY, "Chat automatica (sperimentale)")
+		line3.Add(self.autochat,1,wx.ALIGN_TOP|wx.LEFT,10)
+
+		self.client_frame.Add(line3,0,wx.EXPAND|wx.ALL-wx.BOTTOM,10)
+
 		# linea 3: label "server notes"
 		text_notes = wx.StaticText(panel,wx.ID_ANY,u"Lasciando vuoto il campo \"Connetti a\", verrà avviato un nuovo server in locale ed il client si connetterà a questo.")
 		text_notes.Bind(wx.EVT_SIZE, self.cb_wrap)
@@ -217,6 +227,7 @@ class LauncherWindow(wx.Dialog):
 			c.Enable(not self.standalone.GetValue())
 		self.address.Enable(not self.standalone.GetValue())
 		self.name.Enable(not self.standalone.GetValue())
+		self.autochat.Enable(not self.standalone.GetValue())
 		self.cb_connect_text()
 
 	def OnIdle(self, event=None):
@@ -297,6 +308,9 @@ class LauncherWindow(wx.Dialog):
 				name = self.name.GetValue().strip()
 				if len(name) > 0:
 					argv.append('name='+name)
+
+				if(not self.autochat.GetValue()):
+					argv.append('chat=manual')
 
 				self.Show(False)
 

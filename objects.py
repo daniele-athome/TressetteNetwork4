@@ -21,6 +21,7 @@
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
 from __future__ import division
+import sys
 import pygame,miscgui,deck
 
 RECT=130			# dimensione rettangolo selezione posizione
