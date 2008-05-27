@@ -115,10 +115,12 @@ class ServerPlayer(Player):
 
 	def _req_chat(self,conn):
 		'''Callback richiesta di chat.'''
-		print "(SERVER PLAYER)"
+		print "(SERVER PLAYER) Chat request!"
 
-		self.server.players[self.server.current_order[0]].conn.send(interfaces.NetMethod(protocol.REQ_CHAT,self.position))
-		self.chat_pending = True
+		if conn.user_data['player'].position != self.server.current_order[0]:
+
+			self.server.players[self.server.current_order[0]].conn.send(interfaces.NetMethod(protocol.REQ_CHAT,self.position))
+			self.chat_pending = True
 
 	def _chat(self,conn,message):
 		'''Callback messaggio di chat broadcast.'''
@@ -128,10 +130,10 @@ class ServerPlayer(Player):
 		print "Data:",self.name,message
 		if self.state == STATE_TURN or self.server.table.count(0) >= 3 or self.chat_pending:
 			self.chat_pending = False
-			self.conn.server.send_all(interfaces.NetMethod(protocol.CHAT,': '.join((self.name,message))))
+			self.conn.server.send_all(interfaces.NetMethod(protocol.CHAT,self.name,message))
 
 		else:
-			conn.send(interfaces.NetMethod(protocol.CHAT,message,protocol.ERR_REFUSED))
+			conn.send(interfaces.NetMethod(protocol.CHAT,self.name,message,protocol.ERR_REFUSED))
 
 	def set_state(self,state):
 		# richiama il super prima di tutto
@@ -207,6 +209,7 @@ class ClientPlayer(Player):
 	def __init__(self,name,position,conn,state=STATE_WAIT,manualchat=False):
 		Player.__init__(self,name,position,conn,state)
 
+		self.current_position = -1	# giocatore di turno
 		self.hand_position = -1		# giocatore di mano
 		self.last_hand_position = -1	# giocatore di mano giro precedente
 		self.points = []			# punteggio mani
@@ -250,7 +253,7 @@ class ClientPlayer(Player):
 		self.conn.unregister_method(protocol.GAME_POINTS)
 		self.conn.unregister_method(protocol.END_GAME)
 		self.conn.unregister_method(protocol.CHAT)
-		self.conn.register_method(protocol.REQ_CHAT)
+		self.conn.unregister_method(protocol.REQ_CHAT)
 
 	def _req_chat(self,conn,position):
 		'''Callback richiesta di chat da position.'''
@@ -258,16 +261,18 @@ class ClientPlayer(Player):
 
 		if self.manualchat:
 			# abilita eventi chat entry
-			self.gui.activate_chat(True)
+			self.gui.set_status(' '.join( (self.gui.get_name_from_position(position),"chiede che dice la carta.") ))
+			self.gui.activate_chat(True,self._card_click)
+
 		else:
 			# chat automatica
 			card_num = self.current_last[self.gui.get_side_from_position(self.position)]
 			if card_num > 0:
 				conn.send(interfaces.NetMethod(protocol.CHAT,self.chat_message(card_num)))
 
-	def _chat(self,conn,message,error=None):
+	def _chat(self,conn,name,message,error=None):
 		if error == None:
-			self.gui.set_chat(message)
+			self.gui.set_chat(name,message)
 
 		else:
 			print "(CLIENT) Chat refused!",error
@@ -308,7 +313,7 @@ class ClientPlayer(Player):
 		self.gui.highlight_position(-1)
 
 		# rimuovi chat
-		self.gui.set_chat("")
+		self.gui.set_chat("","")
 
 		# rimuovi etichette accusi
 		for i in range(0,4):
@@ -321,6 +326,7 @@ class ClientPlayer(Player):
 		print "(CLIENT) Position",position,"takes the head!"
 		self.last_hand_position = self.hand_position
 		self.hand_position = -1
+		self.current_position = -1
 
 		# aggiorna dati ultima mano
 		self.last_team = position%2
@@ -340,13 +346,20 @@ class ClientPlayer(Player):
 
 		self.gui.highlight_position(position)
 
+		self.current_position = position
+
 		# non siamo noi, setta stato
 		if position != self.position:
 			self.gui.set_status(' '.join((self.gui.get_name_from_position(position),"sta giocando..."))  )
 
 		else:
-			if self.hand_position == self.position:
-				self.gui.activate_chat(self.manualchat)
+			# siamo di mano, possiamo parlare
+			if self.hand_position == self.position
+				self.gui.set_chat(self.name,"")
+
+				# chat automatica
+				if self.manualchat:
+					self.gui.activate_chat(True)
 
 	def _card_thrown(self,conn,position,card_num,error=None):
 		print "(CLIENT PLAYER) Card thrown by",position,"card",card_num,"error",error
@@ -522,9 +535,9 @@ class ClientPlayer(Player):
 			# nascondi lo score board (se presente)
 			self.gui.update_score_board()
 
-	def _card_click(self,button,position=(0,0)):
+	def _card_click(self,button,position=None):
 
-		if button == 1:
+		if button == 1 and position != None:
 			self.gui.toggle_last(None)
 			card = self.gui.get_card_from_mousepos(position)
 			print "(CLIENT PLAYER) Clicked card",card
@@ -535,6 +548,18 @@ class ClientPlayer(Player):
 		# visualizza ultima
 		elif button == 'escape':
 			self.gui.toggle_last(self.last_cards,self.last_hand_position)
+
+		elif button == 'return':
+			self.conn.send(interfaces.NetMethod(protocol.CHAT,self.gui.get_chat()))
+
+			# se non siamo in turno disabilita la tastiera
+			if self.state != STATE_TURN:
+				self.gui.set_status(' '.join((self.gui.get_name_from_position(self.current_position),"sta giocando..."))  )
+				self.gui.activate_chat(False)
+
+		# richiedi chat
+		elif button == 'f1':
+			self.conn.send(interfaces.NetMethod(protocol.REQ_CHAT))
 
 	def _send_card(self,card_num):
 			self.conn.send(interfaces.NetMethod(protocol.THROW_CARD,card_num))

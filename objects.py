@@ -86,6 +86,9 @@ class TextEntry(TextLabel):
 		self._cursor = 0
 		self.show_cursor(show_cursor)
 
+		# separatori di parola
+		self.sep = (' ', '/', '-', '+', ',', '.', ';', ':' )
+
 		TextLabel.__init__(self,color,text,position,rightbottom,rightlimit,size)
 
 	def set_cursor(self,n):
@@ -111,6 +114,48 @@ class TextEntry(TextLabel):
 	def cursor_end(self):
 		'''Imposta il cursore alla fine.'''
 		self.set_cursor(len(self.text))
+
+	def cursor_next_word(self):
+		'''Imposta il cursore alla prossima parola.'''
+
+		ind = self._find_sep()
+
+		if ind >= 0:
+			self.set_cursor(ind)
+		else:
+			self.cursor_end()
+
+	def cursor_prev_word(self):
+		'''Imposta il cursore alla parola precedente.'''
+
+		ind = self._find_sep(True)
+
+		if ind >= 0:
+			self.set_cursor(ind)
+		else:
+			self.cursor_start()
+
+	def _find_sep(self,backward=False,custom_cursor=-1):
+		'''Restituisce l'indice della prossima/precedente parola dal cursore.'''
+
+		if custom_cursor < 0:
+			custom_cursor = self._cursor
+
+		for c in self.sep:
+			ind = -1
+			if backward:
+				cur = custom_cursor
+				if cur > 0: cur = cur - 1
+				ind = self.text.rfind(c,0,cur)
+			else:
+				ind = self.text.find(c,custom_cursor)
+
+			if ind >= 0:
+				# trovato qualcosa
+				# FIXME non funziona in caso di spazi multipli
+				return ind + 1
+
+		return -1
 
 	def show_cursor(self,bshow):
 		'''Nasconde/mostra il cursore.'''
@@ -176,22 +221,30 @@ class TextEntry(TextLabel):
 
 		elif event.key == pygame.K_LEFT:
 
-			if sys.platform == "darwin":
-				# modificatori Mac OS X
-				# TODO
-				pass
+			if event.mod & pygame.KMOD_CTRL:
+				if sys.platform == "darwin":
+					# modificatori Mac OS X
+					# TODO
+					pass
+				else:
+					self.cursor_prev_word()
 
-			self.cursor_prev()
+			else:
+				self.cursor_prev()
 			ret = True
 
 		elif event.key == pygame.K_RIGHT:
 
-			if sys.platform == "darwin":
-				# modificatori Mac OS X
-				# TODO
-				pass
+			if event.mod & pygame.KMOD_CTRL:
+				if sys.platform == "darwin":
+					# modificatori Mac OS X
+					# TODO
+					pass
+				else:
+					self.cursor_next_word()
 
-			self.cursor_next()
+			else:
+				self.cursor_next()
 			ret = True
 
 		elif event.key == pygame.K_END:
@@ -411,6 +464,7 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 
 		left = self.left
 		top = self.top
+		self.cards = []
 		for c in cards:
 			#print "(GFX) Adding sprite for card",c
 			sp = Card(c,screen)
@@ -436,6 +490,7 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 				else:
 					left = left + CARD_SIZE[0]+2
 
+			self.cards.append(sp)
 			pygame.sprite.OrderedUpdates.add(self,sp)
 
 		left = self.left
@@ -556,10 +611,10 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 
 		# prima di tutto trova la sprite corrispondente
 		sprite = None
-		for sp in self:
+		for sp in self.cards:
 
-			if self.side == SIDE_BOTTOM:
-				if hasattr(sp,'card_num'):
+			#if self.side == SIDE_BOTTOM:
+			if hasattr(sp,'card_num'):
 					#print "(GFX) Sprite card:",sp.card_num
 					if sp.card_num == card_num:
 						#print "(GFX) Found sprite for card",card_num
@@ -567,21 +622,19 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 						break
 
 			else:
-				sprite = self.sprites()[index]
-
-		if not isinstance(sprite,Card): sprite = None
+				sprite = self.cards[index]
 
 		if sprite != None:
 
 			# scala le carte se siamo al SIDE_BOTTOM
 			if self.side == SIDE_BOTTOM:
-				for i in range(self.sprites().index(sprite)+1,len(self.sprites())):
-					sp = self.sprites()[i]
+				for i in range(self.cards.index(sprite)+1,len(self.cards)):
+					sp = self.cards[i]
 					sp.rect.left = sp.rect.left - CARD_SIZE[0] - 2
-				
+
 			# rimuovi la sprite dal gruppo
 			sprite.kill()
-
+			self.cards.remove(sprite)
 
 		return sprite
 

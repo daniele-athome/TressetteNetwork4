@@ -375,20 +375,21 @@ class TS4Client(interfaces.NetEvents):
 		if isinstance(self.current_menu,graphics.GameTable):
 			self.current_menu.update_miniscore((points[0][0],points[1][0]))
 
-	def set_chat(self,text):
+	def set_chat(self,name,text):
 		'''Imposta il messaggio della chat.'''
 
 		if isinstance(self.current_menu,graphics.GameTable):
-			self.current_menu.chat.set_text(text)
+			self.current_menu.set_chat(name,text)
 
 	def get_chat(self):
 		'''Restituisce il messaggio corrente della chat.'''
 
 		if isinstance(self.current_menu,graphics.GameTable):
-			return self.current_menu.chat.get_text()
+			return self.current_menu.chat_entry().get_text()
 
-	def activate_chat(self,bvalue):
+	def activate_chat(self,bvalue,callback=None):
 		'''Attiva/Disattiva la chat entry.'''
 
 		if isinstance(self.current_menu,graphics.GameTable):
-			self.current_menu.chat.show_cursor(bvalue)
+			self.current_menu.chat_entry().show_cursor(bvalue)
+			self.activate_keyboard(callback)

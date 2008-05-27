@@ -1,7 +1,6 @@
 Release: 0.0.1-rc4
 ==============================
-Richiesta chat dopo turno
-Capovolgi prelevamento carte avversarie
+Mapping tasti: F1 -> help, F2 -> richiesta chat, F3 -> ultima mano?
 
 Release 0.0.1
 ==============================
@@ -15,7 +14,7 @@ Perfezionare chat automatica
 Futuro
 ==============================
 Metaserver per registrare i server di gioco
-Gestione URL tressette://server:porta o tressette://servername (da metaserver)
+Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
 Centrare carte quando vengono rimosse
 Protocol: TURN e STATE_TURN sono ridondanti
 Internazionalizzare (gettext o interfaccia compatibile in python)

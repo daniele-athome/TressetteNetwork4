@@ -247,9 +247,6 @@ class TS4Server(Thread,interfaces.NetEvents):
 			for p in self.players:
 				p.cancel_chat_pending()
 
-			# manda messaggio di chat vuoto per svuotare la chat della mano precedente
-			self.conn.send_all(interfaces.NetMethod(protocol.CHAT,''))
-
 			# dichiara accusi del giocatore di mano (se all'inizio del gioco)
 			if self.turn_count < 2 and len(self.players[position].accusations) > 0:
 				self.conn.send_all(interfaces.NetMethod(protocol.ACCUSATIONS,position,self.players[position].accusations))

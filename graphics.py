@@ -114,6 +114,7 @@ class Display(Menu):
 		# crea lo schermo
 		Menu.__init__(self,pygame.display.set_mode(size))
 		pygame.display.set_caption(title)
+		pygame.key.set_repeat(400,50)
 
 	def _update(self):
 		'''Questa funzione viene eseguita nel passaggio da un menu ad un altro.
@@ -259,9 +260,31 @@ class GameTable(Menu):
 		self.updater.add(*self.miniscore)
 		self.update_miniscore()
 
-		# chat
-		self.chat = objects.TextEntry(WHITE,'',(3,0),(None,self.screen.get_size()[1]-2),size=objects.TEXTBOX,show_cursor=show_cursor,bg_color=GREEN)
-		self.updater.add(self.chat)
+		# chat (name label, chat entry)
+		name_label = objects.TextLabel(WHITE,'',(3,0),(None,self.screen.get_size()[1]-2),size=objects.TEXTBOX)
+		chat_entry = objects.TextEntry(WHITE,'',(name_label.rect.left+name_label.rect.width+5,0),(None,self.screen.get_size()[1]-2),
+		 size=objects.TEXTBOX,show_cursor=show_cursor,bg_color=GREEN)
+		self.chat = (name_label,chat_entry)
+		self.updater.add(*self.chat)
+
+	def set_chat(self,name=None,chat=None):
+		if name != None:
+			if len(name) > 0:
+				self.chat[0].set_text(name+": ")
+			else:
+				self.chat[0].set_text("")
+			self.chat[0].update()
+
+		if chat != None:
+			self.chat[1].set_text(chat)
+
+		# aggiusta posizione chat entry
+		self.chat[1].position = (self.chat[0].rect.left + self.chat[0].rect.width,self.chat[1].position[1])
+
+	def chat_entry(self):
+		'''Restituisce la sprite della chat entry.'''
+
+		return self.chat[1]
 
 	def update_miniscore(self,points=(0,0)):
 		'''Aggiorna il miniscore.'''
@@ -279,10 +302,12 @@ class GameTable(Menu):
 
 		# ovviamente operiamo solo se non siamo noi ;)
 		if side != objects.SIDE_BOTTOM:
-			sprite = self.groups[side].sprites()[0]
+			if side == objects.SIDE_TOP:
+				sprite = self.groups[side].cards[0]
+			else:
+				sprite = self.groups[side].cards[-1]
 
-			if isinstance(sprite,objects.Card):
-				sprite.set_card_num(card_num)
+			sprite.set_card_num(card_num)
 
 	def throw_card(self, position, card_num):
 		'''Rimuove una carta dalla mano e la mette in campo.
@@ -434,11 +459,17 @@ class GameTable(Menu):
 
 				if event.type == pygame.KEYDOWN:
 
-					if not self.chat.process_event(event):
+					if not self.chat[1].process_event(event):
 
 						key = None
 						if event.key == pygame.K_ESCAPE:
 							key = 'escape'
+
+						elif event.key == pygame.K_F1:
+							key = 'f1'
+
+						elif event.key == pygame.K_RETURN:
+							key = 'return'
 
 						if key: self.callback(key)
 
@@ -516,7 +547,7 @@ if __name__ == '__main__':
 				del cards[0]
 				p.back_all_cards(p.num)
 				#p.chat.insert_text("ciao")
-				p.chat.delete(False)
+				p.chat[1].delete(False)
 				p.num = p.num + 1
 				if p.num > 3: p.num = 0
 				p.first = True
@@ -558,7 +589,7 @@ if __name__ == '__main__':
 			st.hand_begin()
 			st.hand_update(((7,0),(3,0)))
 			st.hand_end((11,6),0)
-	
+
 			st.hand_begin()
 			st.hand_update( ((2,0),(8,0)) )
 			st.hand_end((7+11,8+6),0)
@@ -589,11 +620,8 @@ if __name__ == '__main__':
 		sp.image.set_alpha(150)
 		p.updater.add(sp)
 		"""
-		p.chat.set_text("daniele!")
-		p.chat.set_cursor(5)
+		p.set_chat("daniele","bella zio!")
 		p.updater.add(p.score)
-
-	pygame.key.set_repeat(400,50)
 
 	while True:
 		goto = p.menu()
