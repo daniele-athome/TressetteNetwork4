@@ -115,12 +115,13 @@ class ServerPlayer(Player):
 
 	def _req_chat(self,conn):
 		'''Callback richiesta di chat.'''
-		print "(SERVER PLAYER) Chat request!"
+		print "(SERVER PLAYER) Chat request!",conn.user_data['player'].position,self.server.current_order
 
 		if conn.user_data['player'].position != self.server.current_order[0]:
 
-			self.server.players[self.server.current_order[0]].conn.send(interfaces.NetMethod(protocol.REQ_CHAT,self.position))
-			self.chat_pending = True
+			np = self.server.current_order[0]
+			self.server.players[np].conn.send(interfaces.NetMethod(protocol.REQ_CHAT,self.position))
+			self.server.players[np].chat_pending = True
 
 	def _chat(self,conn,message):
 		'''Callback messaggio di chat broadcast.'''
@@ -259,16 +260,9 @@ class ClientPlayer(Player):
 		'''Callback richiesta di chat da position.'''
 		print "(CLIENT) Chat request by",position
 
-		if self.manualchat:
-			# abilita eventi chat entry
-			self.gui.set_status(' '.join( (self.gui.get_name_from_position(position),"chiede che dice la carta.") ))
-			self.gui.activate_chat(True,self._card_click)
-
-		else:
-			# chat automatica
-			card_num = self.current_last[self.gui.get_side_from_position(self.position)]
-			if card_num > 0:
-				conn.send(interfaces.NetMethod(protocol.CHAT,self.chat_message(card_num)))
+		# abilita eventi chat entry
+		self.gui.set_status(' '.join( (self.gui.get_name_from_position(position),"chiede che dice la carta.") ))
+		self.gui.activate_chat(True,self._card_click)
 
 	def _chat(self,conn,name,message,error=None):
 		if error == None:
@@ -336,11 +330,15 @@ class ClientPlayer(Player):
 		# dai carte a chi ha preso
 		self.gui.back_all_cards(position)
 
+		# disattiva chat entry
+		self.gui.activate_chat(False)
+
 	def _turning(self,conn,position):
 		print "(CLIENT) It's time for position",position
 
 		if self.hand_position < 0:
 			self.hand_position = position
+			self.gui.set_chat(self.gui.get_name_from_position(position),"")
 			# highlight del giocatore di mano
 			self.gui.highlight_name(position)
 
@@ -354,12 +352,13 @@ class ClientPlayer(Player):
 
 		else:
 			# siamo di mano, possiamo parlare
-			if self.hand_position == self.position
+			if self.hand_position == self.position:
 				self.gui.set_chat(self.name,"")
 
-				# chat automatica
+				# chat manuale
 				if self.manualchat:
 					self.gui.activate_chat(True)
+
 
 	def _card_thrown(self,conn,position,card_num,error=None):
 		print "(CLIENT PLAYER) Card thrown by",position,"card",card_num,"error",error
@@ -454,9 +453,6 @@ class ClientPlayer(Player):
 				else:
 					ret = "altre "+str(count)+"."
 
-		# caso 1: due carte da tressette. Se card_num e' una carta da tressette, allora "voglio", altrimenti, "ho il 25/21/28"
-		# TODO
-
 		return ret
 
 	def _accusations(self,conn,position,accuses):
@@ -541,7 +537,7 @@ class ClientPlayer(Player):
 			self.gui.toggle_last(None)
 			card = self.gui.get_card_from_mousepos(position)
 			print "(CLIENT PLAYER) Clicked card",card
-			if card > 0:
+			if card > 0 and self.current_position == self.position:
 				self._send_card(card)
 				self.gui.activate_keyboard(None)
 

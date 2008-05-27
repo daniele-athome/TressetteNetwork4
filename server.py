@@ -244,9 +244,6 @@ class TS4Server(Thread,interfaces.NetEvents):
 			self.current_order = self._rotate([0,1,2,3],position)
 			self.players[position].set_state(player.STATE_TURN)
 
-			for p in self.players:
-				p.cancel_chat_pending()
-
 			# dichiara accusi del giocatore di mano (se all'inizio del gioco)
 			if self.turn_count < 2 and len(self.players[position].accusations) > 0:
 				self.conn.send_all(interfaces.NetMethod(protocol.ACCUSATIONS,position,self.players[position].accusations))
@@ -268,6 +265,10 @@ class TS4Server(Thread,interfaces.NetEvents):
 		if self.table.count(0) == 0:
 			# fine giro, determina chi prende e dichiara
 			print "(SERVER) End round!"
+
+			# elimina ogni chat pendente
+			for p in self.players:
+				p.cancel_chat_pending()
 
 			primary = deck.get_card(self.table[self.current_order[0]])
 			take = self.current_order[0]
