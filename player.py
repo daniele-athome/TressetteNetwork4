@@ -261,7 +261,7 @@ class ClientPlayer(Player):
 		print "(CLIENT) Chat request by",position
 
 		# abilita eventi chat entry
-		self.gui.set_status(' '.join( (self.gui.get_name_from_position(position),"chiede che dice la carta.") ))
+		self.gui.set_status(' '.join( (self.gui.get_name_from_position(position),"chiede che dice la carta.") ),True)
 		self.gui.activate_chat(True,self._card_click)
 
 	def _chat(self,conn,name,message,error=None):
@@ -365,7 +365,7 @@ class ClientPlayer(Player):
 
 		if error != None:
 			# errore... buahahah
-			self.gui.set_status("Devi rispondere al seme.")
+			self.gui.set_status("Devi rispondere al seme.",True)
 
 			# riprova
 			self.gui.activate_keyboard(self._card_click)
@@ -513,7 +513,7 @@ class ClientPlayer(Player):
 
 			else:
 				self.gui.activate_keyboard(self._card_click)
-				self.gui.set_status("Scegli una carta da giocare.")
+				self.gui.set_status("Scegli una carta da giocare.",True)
 
 	def _getting_cards(self,conn,cards,error=None):
 		print "(CLIENT PLAYER) My cards:",cards

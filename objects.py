@@ -43,6 +43,8 @@ class TextLabel(pygame.sprite.Sprite):
 		self.size = size
 		self.font = miscgui.create_font(size)
 
+		self.stop_animation()
+
 		self.set_position(position,rightbottom,rightlimit)
 		self.update()
 
@@ -56,6 +58,22 @@ class TextLabel(pygame.sprite.Sprite):
 		self.color = color
 
 	def update(self,more_space=False,bgcolor=(0,0,0)):
+
+		if self._anim:
+			tick = (pygame.time.get_ticks() - self._start)/500*4.0
+			if tick > 1.0:
+				self._start = pygame.time.get_ticks()
+
+				# cambia colore
+				if self.current_color != self.hl_color:
+					self.current_color = self.hl_color
+				else:
+					self.current_color = self.color
+
+				self._times = self._times + 1
+				if self._times >= 6:
+					self.stop_animation()
+
 		self._make_text(more_space,bgcolor)
 
 	def set_position(self, xy, rightbottom = (None, None), rightlimit = False):
@@ -64,7 +82,7 @@ class TextLabel(pygame.sprite.Sprite):
 		self.rightlimit = rightlimit
 
 	def _make_text(self,more_space=False,bgcolor=(0,0,0)):
-		self.image = miscgui.draw_text(self.text,self.size,self.color,font=self.font,more_space=more_space,bgcolor=bgcolor)
+		self.image = miscgui.draw_text(self.text,self.size,self.current_color,font=self.font,more_space=more_space,bgcolor=bgcolor)
 		self.rect = self.image.get_rect()
 
 		self.rect.topleft = self.position
@@ -77,6 +95,21 @@ class TextLabel(pygame.sprite.Sprite):
 
 		if self.rightlimit:
 			self.rect.right = self.rightlimit
+
+	def animate_highlight(self,hl_color):
+		'''Lampeggia la scritta nel colore dato per 3 volte.'''
+
+		self.hl_color = hl_color
+		self._anim = True
+		self._times = 0
+		self._start = pygame.time.get_ticks()
+
+	def stop_animation(self):
+		'''Ferma l'animazione del lampeggio.'''
+
+		self._anim = False
+		self.hl_color = None
+		self.current_color = self.color
 
 class TextEntry(TextLabel):
 	'''Una TextLabel modificabile dall'utente.'''
@@ -333,7 +366,7 @@ class PositionButton(pygame.sprite.Sprite):
 
 		if mine:
 			self.color = (255, 0, 0)
-	
+
 		self.name = name
 
 # posizioni in senso antiorario

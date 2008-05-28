@@ -136,6 +136,7 @@ class TS4Client(interfaces.NetEvents):
 				else:
 					# posto occupato
 					self.current_menu.set_status(u"Il nome scelto è già in uso da un altro giocatore.")
+					self.current_menu.status_highlight()
 
 			self._update_selector(position, name, True)
 
@@ -147,6 +148,9 @@ class TS4Client(interfaces.NetEvents):
 					self.current_menu.set_status(u"Il nome scelto è già in uso da un altro giocatore.")
 				elif error == protocol.ERR_POS_BUSY:
 					self.current_menu.set_status(u"La posizione scelta è già in uso da un altro giocatore.")
+
+				if error != None:
+					self.current_menu.status_highlight()
 
 				# riattiva la tastiera
 				self.activate_keyboard(self._position_pressed)
@@ -216,6 +220,7 @@ class TS4Client(interfaces.NetEvents):
 					status = status + "iniziare!"
 
 			self.current_menu.set_status(status)
+			self.current_menu.status_highlight()
 
 	# funzione hackata (vedi mousepos) per ricominciare la partita
 	def _spacebar_pressed(self, key, mousepos = None):
@@ -288,10 +293,12 @@ class TS4Client(interfaces.NetEvents):
 		if isinstance(self.current_menu,graphics.GameTable):
 			self.current_menu.add_timeout(2000,self.current_menu.back_all_cards,position)
 
-	def set_status(self,status):
+	def set_status(self,status,highlight=False):
 		'''Imposta lo stato del menu corrente.'''
 
 		self.current_menu.set_status(status)
+		if highlight:
+			self.current_menu.status_highlight()
 
 	def set_player_subtitle(self,position,text):
 		'''Imposta un testo sotto il nome.'''

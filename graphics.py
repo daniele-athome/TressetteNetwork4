@@ -104,6 +104,10 @@ class Menu:
 		'''Imposta il testo di stato.'''
 		self.status.set_text(text)
 
+	def status_highlight(self):
+		'''Anima il testo di stato.'''
+		self.status.animate_highlight((255,0,0))
+
 class Display(Menu):
 	'''Menu schermo bianco (verde in effetti).'''
 
@@ -546,6 +550,7 @@ if __name__ == '__main__':
 			if not p.first:
 				del cards[0]
 				p.back_all_cards(p.num)
+				p.status.animate_highlight((255,0,0))
 				#p.chat.insert_text("ciao")
 				p.chat[1].delete(False)
 				p.num = p.num + 1
