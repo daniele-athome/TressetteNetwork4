@@ -77,7 +77,7 @@ if [ "$WPYTHON" == "1" ]; then
 fi
 
 # prepare compiled python files
-execfile("compile.py")
+./compile.py
 
 # create the installer
 ARG="$ARG -DTSNET4_VERSION=$VERSION"
