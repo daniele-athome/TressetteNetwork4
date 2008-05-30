@@ -28,6 +28,13 @@ WHITE=(255,255,255)
 GREEN=(0,180,0)
 LGREEN=(123,240,123)
 
+HELP_TEXT = (
+	("F1","mostra questa schermata"),
+	("F2","mostra l'ultima mano"),
+	("F3","richiama il giocatore di mano")
+)
+	
+
 class Menu:
 	'''Classe di base per tutti i menu.'''
 
@@ -259,6 +266,9 @@ class GameTable(Menu):
 		self.score = objects.MultilineText((400,400),GREEN,LGREEN,BLACK,"Punteggio","",(self.screen.get_size()[0]//2,self.screen.get_size()[1]//2))
 		self.last = objects.TableReplay(GREEN,LGREEN,BLACK,"Ultime carte",(self.screen.get_size()[0]//2,self.screen.get_size()[1]//2))
 
+		self.help = objects.MultilineText((400,400),GREEN,LGREEN,BLACK,"Aiuto",HELP_TEXT,
+		 (self.screen.get_size()[0]//2,self.screen.get_size()[1]//2),objects.TEXTBOX2)
+
 		self.miniscore = (objects.TextLabel(WHITE,'',(5,5),size=objects.TEXTBOX-5),
 						objects.TextLabel(WHITE,'',(5,5+objects.TEXTBOX2),size=objects.TEXTBOX-5))
 		self.updater.add(*self.miniscore)
@@ -441,6 +451,17 @@ class GameTable(Menu):
 			self.score.set_text(final)
 			self.updater.add(self.score)
 
+	def show_help(self, bshow = True):
+		'''Mostra/nasconde l'aiuto veloce.'''
+
+		if bshow:
+			self.updater.add(self.bgdark)
+			self.updater.add(self.help)
+
+		else:
+			self.help.kill()
+			self.bgdark.kill()
+
 	def show_last(self, cards = None, last = -1):
 		'''Mostra le ultime 4 carte dell'ultimo giro.'''
 
@@ -471,6 +492,12 @@ class GameTable(Menu):
 
 						elif event.key == pygame.K_F1:
 							key = 'f1'
+
+						elif event.key == pygame.K_F2:
+							key = 'f2'
+
+						elif event.key == pygame.K_F3:
+							key = 'f3'
 
 						elif event.key == pygame.K_RETURN:
 							key = 'return'
@@ -544,7 +571,9 @@ if __name__ == '__main__':
 
 	def callback_ciao(num,pos=None):
 		p.score.kill()
-		#if num == 'space':
+		if num == 'f1':
+			p.show_help(True)
+
 		if num:
 
 			if not p.first:

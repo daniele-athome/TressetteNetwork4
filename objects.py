@@ -720,7 +720,7 @@ class MultilineText(pygame.sprite.Sprite):
 		self.text = text
 
 		self.center = center
-		self.fontsize = fontsize
+		self.font = miscgui.create_font(fontsize,False,False)
 
 		# crea superficie per il disegno
 		self.image = pygame.surface.Surface(size)
@@ -765,7 +765,7 @@ class MultilineText(pygame.sprite.Sprite):
 				else:
 
 					for i in range(0,len(line)):
-						surf = miscgui.draw_text(line[i],TEXTBOX,self.color)
+						surf = miscgui.draw_text(line[i],color=self.color,font=self.font)
 						rect = surf.get_rect()
 						rect.centerx = 25+(((self.rect.width-50)//len(line))*i)+((self.rect.width-50)//len(line)//2)
 						rect.top = top

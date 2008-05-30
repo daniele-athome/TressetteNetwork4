@@ -541,10 +541,6 @@ class ClientPlayer(Player):
 				self._send_card(card)
 				self.gui.activate_keyboard(None)
 
-		# visualizza ultima
-		elif button == 'escape':
-			self.gui.toggle_last(self.last_cards,self.last_hand_position)
-
 		elif button == 'return':
 			self.conn.send(interfaces.NetMethod(protocol.CHAT,self.gui.get_chat()))
 
@@ -553,8 +549,16 @@ class ClientPlayer(Player):
 				self.gui.set_status(' '.join((self.gui.get_name_from_position(self.current_position),"sta giocando..."))  )
 				self.gui.activate_chat(False)
 
-		# richiedi chat
+		# multiline di aiuto
 		elif button == 'f1':
+			self.gui.toggle_help()
+
+		# visualizza ultima
+		elif button == 'f2':
+			self.gui.toggle_last(self.last_cards,self.last_hand_position)
+
+		# richiedi chat
+		elif button == 'f3':
 			self.conn.send(interfaces.NetMethod(protocol.REQ_CHAT))
 
 	def _send_card(self,card_num):

@@ -1,7 +1,6 @@
 Release: 0.0.1-rc6
 ==============================
-NSIS: bug del python cambiato di directory + PythonCore sia in HKCU che in HKLM
-Mapping tasti: F1 -> help, F2 -> richiesta chat, F3 -> ultima mano?
+Funzione tasto Escape?
 
 Release 0.0.1
 ==============================
