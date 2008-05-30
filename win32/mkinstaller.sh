@@ -2,11 +2,17 @@
 # Build an installer with makensis
 
 NSI_SCRIPT="tsnet4.nsi"
+VERSION="`./print-version.py`"
 
-# procuce nsi script from nsi.in
-sed s/\$\{VERSION\}/`./print-version.py`/ <"$NSI_SCRIPT.in" >"$NSI_SCRIPT"
+PYTHON="python-2.5.2.msi"
+PYGAME="pygame-1.8.0.win32-py2.5.msi"
+WXPYTHON="wxPython2.8-win32-unicode-2.8.7.1-py25.exe"
 
-PYTHON="1"
+PYTHON_URL="http://www.python.org/ftp/python/2.5.2/$PYTHON"
+PYGAME_URL="http://www.pygame.org/ftp/$PYGAME"
+WXPYTHON_URL="http://downloads.sourceforge.net/wxpython/$WXPYTHON"
+
+WPYTHON="1"
 
 for i in $@; do
 
@@ -19,23 +25,19 @@ exit 1
 fi
 
 if [ "$i" == "--without-python" ]; then
-  PYTHON="0"
+  WPYTHON="0"
 fi
 
 if [ "$i" == "--force-python" ]; then
-  PYTHON="1"
+  WPYTHON="1"
   FORCEPY="1"
 fi
 
 done
 
-if [ "$PYTHON" == "1" ]; then
+if [ "$WPYTHON" == "1" ]; then
 
   # Autodownload python and dependiences
-  PYTHON="python-2.5.2.msi"
-  PYGAME="pygame-1.8.0.win32-py2.5.msi"
-  WXPYTHON="wxPython2.8-win32-unicode-2.8.7.1-py25.exe"
-
   if test -s "$PYTHON"; then
     if [ "$FORCEPY" == "1" ]; then echo $FORCEPY; PYTHON_DL="1"; fi
   else
@@ -56,31 +58,27 @@ if [ "$PYTHON" == "1" ]; then
 
   # download!
   if [ "$PYTHON_DL" == "1" ]; then
-    rm -f $PYTHON
-    wget -c "http://www.python.org/ftp/python/2.5.2/$PYTHON"
+    rm -f "$PYTHON"
+    wget -c "$PYTHON_URL"
   fi
 
   if [ "$PYGAME_DL" == "1" ]; then
-    rm -f $PYGAME
-    wget -c "http://www.pygame.org/ftp/$PYGAME"
+    rm -f "$PYGAME"
+    wget -c "$PYGAME_DL"
   fi
 
   if [ "$WXPYTHON_DL" == "1" ]; then
-    rm -f $WXPYTHON
-    wget -c "http://downloads.sourceforge.net/wxpython/$WXPYTHON"
+    rm -f "$WXPYTHON"
+    wget -c "$WXPYTHON_DL"
   fi
-
 
   ARG="-DPYTHON"
 
 fi
 
 # prepare compiled python files
-_OLD="$PWD"
-cd ..
-py_compilefiles -f *.py
-cd netframework
-py_compilefiles -f *.py
-cd ${_OLD}
+execfile("compile.py")
 
-makensis $ARG $NSI_SCRIPT
+# create the installer
+ARG="$ARG -DTSNET4_VERSION=$VERSION"
+makensis $ARG "$NSI_SCRIPT"

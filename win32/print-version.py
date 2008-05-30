@@ -6,4 +6,9 @@ sys.path.append("..")
 
 import main
 
-print main.VERSION
+if len(sys.argv) > 1:
+	f = open(sys.argv[1],"w+")
+	f.write(main.VERSION)
+	f.close()
+else:
+	print main.VERSION
