@@ -17,3 +17,4 @@ Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
 Centrare carte quando vengono rimosse
 Protocol: TURN e STATE_TURN sono ridondanti
 Internazionalizzare (gettext o interfaccia compatibile in python)
+Giocatori computer
