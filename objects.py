@@ -659,15 +659,17 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 
 		if sprite != None:
 
-			# scala le carte se siamo al SIDE_BOTTOM
-			if self.side == SIDE_BOTTOM:
-				for i in range(self.cards.index(sprite)+1,len(self.cards)):
-					sp = self.cards[i]
-					sp.rect.left = sp.rect.left - CARD_SIZE[0] - 2
-
 			# rimuovi la sprite dal gruppo
 			sprite.kill()
+			c = self.cards.index(sprite)
 			self.cards.remove(sprite)
+
+			# scala le carte se siamo al SIDE_BOTTOM
+			if self.side == SIDE_BOTTOM:
+				# TODO: centrare invece di scalare a sinistra
+				for i in range(c,len(self.cards)):
+					sp = self.cards[i]
+					sp.rect.left = sp.rect.left - CARD_SIZE[0] - 2
 
 		return sprite
 
