@@ -1,20 +1,30 @@
-Release: 0.0.1-rc7
+Release 0.0.1-rc7
 ==============================
 Funzione tasto Escape? + altri tasti
+Centrare carte quando vengono rimosse
 
 Release 0.0.1
 ==============================
-Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython)
+Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython in .mpkg)
 
-Release: 0.0.2
-==============================
-Perfezionare chat automatica
-
-Futuro
+Release 0.0.2
 ==============================
 Metaserver per registrare i server di gioco
 Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
-Centrare carte quando vengono rimosse
-Protocol: TURN e STATE_TURN sono ridondanti
+
+Release 0.0.3
+==============================
+Perfezionare chat automatica
+
+Release 0.1.x
+==============================
+Rivedere protocollo
 Internazionalizzare (gettext o interfaccia compatibile in python)
+
+Release 0.2.x
+==============================
 Giocatori computer
+
+Futuro
+==============================
+Interfaccia grafica tutta in Pygame (elimina dipendenza da wx)
