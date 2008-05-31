@@ -1,6 +1,7 @@
 Release 0.0.1-rc7
 ==============================
-Funzione tasto Escape? + altri tasti
+Problema con MultilineText: testo allargato?!?
+Escape: conferma uscita dal gioco (grafica, multilinetext -> messagebox)
 
 Release 0.0.1
 ==============================
@@ -8,6 +9,7 @@ Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython in .mpkg
 
 Release 0.0.2
 ==============================
+Gioco con password
 Metaserver per registrare i server di gioco
 Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
 

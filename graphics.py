@@ -27,6 +27,7 @@ BLACK=(0,0,0)
 WHITE=(255,255,255)
 GREEN=(0,180,0)
 LGREEN=(123,240,123)
+RED=(255,0,0)
 
 HELP_TEXT = (
 	("F1","mostra questa schermata"),
@@ -113,7 +114,7 @@ class Menu:
 
 	def status_highlight(self):
 		'''Anima il testo di stato.'''
-		self.status.animate_highlight((255,0,0))
+		self.status.animate_highlight(RED)
 
 class Display(Menu):
 	'''Menu schermo bianco (verde in effetti).'''
@@ -403,7 +404,7 @@ class GameTable(Menu):
 		side = self.get_side_from_position(position)
 
 		if value:
-			self.groups[side].title.set_color((255,0,0))
+			self.groups[side].title.set_color(RED)
 
 		else:
 			self.groups[side].title.set_color(BLACK)
@@ -593,14 +594,14 @@ if __name__ == '__main__':
 	def callback_ciao(num,pos=None):
 		p.score.kill()
 		if num == 'f1':
-			p.show_help(True)
+			p.updater.add(objects.MessageBox(GREEN,LGREEN,BLACK,"Avviso",(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2),("Bella zio!",)))
 
 		if num:
 
 			if not p.first:
 				del cards[0]
 				p.back_all_cards(p.num)
-				p.status.animate_highlight((255,0,0))
+				p.status.animate_highlight(RED)
 				#p.chat.insert_text("ciao")
 				p.chat[1].delete(False)
 				p.num = p.num + 1

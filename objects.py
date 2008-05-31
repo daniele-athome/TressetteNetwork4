@@ -31,6 +31,9 @@ TEXTBOX=30			# dimensione (in pixel) del font della textbox
 TEXTBOX2=20			# dimensione (in pixel) del font delle textbox per gli accusi
 TITLE=40			# dimensione (in pixel) del font del titolo della casella di testo
 LINE=12				# spessore della linea che separa titolo da testo nella casella di testo
+CARD_OFFSET=2		# distanza tra le carte (solo per SIDE_BOTTOM)
+BTN_SIZE=(100,50)	# grandezza pulsante (MessageBox)
+BTN_OFFSET=5		# distanza tra i pulsanti (MessageBox)
 
 class TextLabel(pygame.sprite.Sprite):
 	'''Una scritta da poter mettere dove si vuole.'''
@@ -522,7 +525,7 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 				if side == SIDE_TOP:
 					left = left + CARD_SIZE[0]-CARD_SIZE[0]//2
 				else:
-					left = left + CARD_SIZE[0]+2
+					left = left + CARD_SIZE[0]+CARD_OFFSET
 
 			self.cards.append(sp)
 			pygame.sprite.OrderedUpdates.add(self,sp)
@@ -668,15 +671,10 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 			# scala le carte se siamo al SIDE_BOTTOM
 			if self.side == SIDE_BOTTOM:
 				# TODO: centrare invece di scalare a sinistra
-				start = (self.screen.get_size()[0] - (CARD_SIZE[0] * len(self.cards)) - (2 * len(self.cards))) // 2
+				start = (self.screen.get_size()[0] - (CARD_SIZE[0] * len(self.cards)) - (CARD_OFFSET * len(self.cards))) // 2
 				for i in range(0,len(self.cards)):
 					sp = self.cards[i]
-					sp.rect.left = start + (i * CARD_SIZE[0]) + (2 * i)
-				"""
-				for i in range(c,len(self.cards)):
-					sp = self.cards[i]
-					sp.rect.left = sp.rect.left - CARD_SIZE[0] - 2
-				"""
+					sp.rect.left = start + (i * CARD_SIZE[0]) + (CARD_OFFSET * i)
 
 		return sprite
 
@@ -791,7 +789,7 @@ class TableReplay(MultilineText):
 	def __init__(self, bg_color, out_color, color, title, center, cards = None, hand_side = -1):
 		MultilineText.__init__(self, (CARD_SIZE[0]*5+50,CARD_SIZE[1]*3+50), bg_color, out_color, color, title, None, center)
 
-		self.cards = []
+		self.cards = None
 		self.set_cards(cards,hand_side)
 
 	def update(self):
@@ -829,3 +827,20 @@ class TableReplay(MultilineText):
 
 				c.rect.top = c.rect.top + OFFSET*3
 				self.cards.append(c)
+
+class MessageBox(MultilineText):
+	'''MessageBox costruita con il MultilineText.'''
+
+	def __init__(self, bg_color, out_color, color, title, center = (0,0), text = '', buttons = ('OK',)):
+		MultilineText.__init__(self, (500,200), bg_color, out_color, color, title, text, center)
+
+		self.buttons = buttons
+
+	def update(self):
+		MultilineText.update(self)
+
+		# disegna pulsanti
+		start = (self.size[0] - (BTN_SIZE[0]*len(self.buttons)) - (BTN_OFFSET*len(self.buttons)))//2
+		for b in self.buttons:
+			# TODO
+			pass
