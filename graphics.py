@@ -460,6 +460,12 @@ class GameTable(Menu):
 
 		else:
 			self.help.kill()
+
+			for sp in self.updater.sprites():
+				if isinstance(sp,objects.MultilineText) and sp != self.score:
+					# se troviamo un'altra multilinetext (ad eccezione dello score) non leviamo il background
+					return
+
 			self.bgdark.kill()
 
 	def show_last(self, cards = None, last = -1):
@@ -467,12 +473,27 @@ class GameTable(Menu):
 
 		if cards == None:
 			self.last.kill()
+
+			for sp in self.updater.sprites():
+				if isinstance(sp,objects.MultilineText) and sp != self.score:
+					# se troviamo un'altra multilinetext (ad eccezione dello score) non leviamo il background
+					return
+
 			self.bgdark.kill()
 
 		else:
 			self.last.set_cards(cards,self.get_side_from_position(last))
 			self.updater.add(self.bgdark)
 			self.updater.add(self.last)
+
+	def cancel_multilines(self):
+		'''Rimuove tutti i MultilineText e l'eventuale dark background.'''
+
+		for sp in self.updater.sprites():
+			if isinstance(sp,objects.MultilineText):
+				sp.kill()
+
+			if sp == self.bgdark: sp.kill()
 
 	def menu(self):
 		for event in pygame.event.get():

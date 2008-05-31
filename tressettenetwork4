@@ -2,8 +2,8 @@
 
 try:
 	import tressettenetwork4.main
-	tressettenetwork4.main.main()
+	tressettenetwork4.main._main()
 
 except:
 	import main
-	main.main()
+	main._main()

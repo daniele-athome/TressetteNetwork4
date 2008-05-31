@@ -49,6 +49,7 @@ class TextLabel(pygame.sprite.Sprite):
 		self.update()
 
 	def set_text(self,text):
+		self.stop_animation()
 		self.text = text
 
 	def get_text(self):
@@ -667,9 +668,15 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 			# scala le carte se siamo al SIDE_BOTTOM
 			if self.side == SIDE_BOTTOM:
 				# TODO: centrare invece di scalare a sinistra
+				start = (self.screen.get_size()[0] - (CARD_SIZE[0] * len(self.cards)) - (2 * len(self.cards))) // 2
+				for i in range(0,len(self.cards)):
+					sp = self.cards[i]
+					sp.rect.left = start + (i * CARD_SIZE[0]) + (2 * i)
+				"""
 				for i in range(c,len(self.cards)):
 					sp = self.cards[i]
 					sp.rect.left = sp.rect.left - CARD_SIZE[0] - 2
+				"""
 
 		return sprite
 

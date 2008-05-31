@@ -534,7 +534,7 @@ class ClientPlayer(Player):
 	def _card_click(self,button,position=None):
 
 		if button == 1 and position != None:
-			self.gui.toggle_last(None)
+			self.gui.remove_popups()
 			card = self.gui.get_card_from_mousepos(position)
 			print "(CLIENT PLAYER) Clicked card",card
 			if card > 0 and self.current_position == self.position:

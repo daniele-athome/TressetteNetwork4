@@ -362,11 +362,22 @@ class TS4Client(interfaces.NetEvents):
 
 			self.current_menu.show_last(cd,last)
 
-	def toggle_help(self, bshow):
+	def toggle_help(self):
 		'''Mostra/nasconde l'aiuto veloce.'''
 
 		if isinstance(self.current_menu,graphics.GameTable):
+
+			bshow = True
+			if self.current_menu.help in self.current_menu.updater:
+				bshow = False
+
 			self.current_menu.show_help(bshow)
+
+	def remove_popups(self):
+		'''Rimuove tutti i popup.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+			self.current_menu.cancel_multilines()
 
 	def end_game(self):
 		'''Segna la fine della partita.'''
