@@ -533,13 +533,23 @@ class ClientPlayer(Player):
 
 	def _card_click(self,button,position=None):
 
-		if button == 1 and position != None:
-			self.gui.remove_popups()
-			card = self.gui.get_card_from_mousepos(position)
-			print "(CLIENT PLAYER) Clicked card",card
-			if card > 0 and self.current_position == self.position:
-				self._send_card(card)
-				self.gui.activate_keyboard(None)
+		if position != None:
+
+			if button == -1:	# mousedown button 1
+
+				self.gui.process_mousedown(position)
+
+			elif button == 1:	# mouseup button 1
+
+				if self.gui.process_mouseup(position):
+					self.gui.remove_popups()
+
+					card = self.gui.get_card_from_mousepos(position)
+					print "(CLIENT PLAYER) Clicked card",card
+
+					if card > 0 and self.current_position == self.position:
+						self._send_card(card)
+						self.gui.activate_keyboard(None)
 
 		elif button == 'return':
 			self.conn.send(interfaces.NetMethod(protocol.CHAT,self.gui.get_chat()))
@@ -560,6 +570,15 @@ class ClientPlayer(Player):
 		# richiedi chat
 		elif button == 'f3':
 			self.conn.send(interfaces.NetMethod(protocol.REQ_CHAT))
+
+		elif button == 'escape':
+			self.gui.message_box(self._escape_response,"Terminare la partita?","Esci dal gioco",self.gui.get_buttons("MB_YESNO"))
+
+	def _escape_response(self,msgbox,response):
+		print "(CLIENT PLAYER) Response is",response
+
+		if response == 0:		# yes!
+			self.gui.goto_menu("exit")
 
 	def _send_card(self,card_num):
 			self.conn.send(interfaces.NetMethod(protocol.THROW_CARD,card_num))

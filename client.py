@@ -40,6 +40,7 @@ class TS4Client(interfaces.NetEvents):
 
 		self.display = graphics.Display(size,' v'.join((main.NAME,main.VERSION)))
 		self.current_menu = self.display
+		self.msgbox = None
 
 		# registra unix signal handler
 		signal.signal(signal.SIGTERM,self.sig_term)
@@ -357,10 +358,13 @@ class TS4Client(interfaces.NetEvents):
 		if isinstance(self.current_menu,graphics.GameTable):
 
 			cd = cards
+			ret = True
 			if self.current_menu.last in self.current_menu.updater:
 				cd = None
+				ret = False
 
 			self.current_menu.show_last(cd,last)
+			return ret
 
 	def toggle_help(self):
 		'''Mostra/nasconde l'aiuto veloce.'''
@@ -372,6 +376,7 @@ class TS4Client(interfaces.NetEvents):
 				bshow = False
 
 			self.current_menu.show_help(bshow)
+			return bshow
 
 	def remove_popups(self):
 		'''Rimuove tutti i popup.'''
@@ -418,3 +423,46 @@ class TS4Client(interfaces.NetEvents):
 		if isinstance(self.current_menu,graphics.GameTable):
 			self.current_menu.chat_entry().show_cursor(bvalue)
 			self.activate_keyboard(callback)
+
+	def message_box(self,callback,text,title,buttons=graphics.MB_OK):
+		'''Visualizza una MessageBox.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+
+			if self.msgbox != None:
+				self.msgbox[0].kill()
+
+			self.msgbox = (self.current_menu.add_messagebox(text,title,buttons),callback)
+			print "Added messagebox:",self.msgbox
+
+	def get_buttons(self,sym):
+		return getattr(graphics,sym)
+
+	def process_mousedown(self,pos):
+		'''Processa l'evento MouseDown.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+
+			print "Processing mouseDOWN on",self.msgbox
+			if self.msgbox != None:
+				self.msgbox[0]._mousedown(pos)
+
+	def process_mouseup(self,pos):
+		'''Processa l'evento MouseUp.'''
+
+		if isinstance(self.current_menu,graphics.GameTable):
+
+			print "Processing mouseUP on",self.msgbox
+			if self.msgbox != None:
+				n = self.msgbox[0]._click(pos)
+				if n >= 0:
+					if self.msgbox[1] != None:
+						self.msgbox[1](self.msgbox[0],n)
+
+					self.msgbox[0].kill()
+					self.msgbox = None
+
+				else:
+					return False
+
+		return True

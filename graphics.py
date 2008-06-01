@@ -34,7 +34,17 @@ HELP_TEXT = (
 	("F2","mostra l'ultima mano"),
 	("F3","richiama il giocatore di mano")
 )
-	
+
+# responsi/testi pulsanti
+MB_YES=u"Sì"
+MB_NO="No"
+MB_OK="OK"
+MB_CANCEL="Annulla"
+
+# pulsanti
+MB_YESNO=(MB_YES,MB_NO)
+MB_OK=(MB_OK,)
+MB_OKCANCEL=(MB_OK,MB_CANCEL)
 
 class Menu:
 	'''Classe di base per tutti i menu.'''
@@ -64,6 +74,14 @@ class Menu:
 		'''
 
 		self.timeouts.append( [millisecs,callback,args,pygame.time.get_ticks()] )
+
+	def message_box(self,text,title,buttons):
+		'''Restituisce una nuova MessageBox.'''
+
+		return objects.MessageBox(GREEN, LGREEN, BLACK, title, self.get_center(), text, buttons)
+
+	def get_center(self):
+		return (self.screen.get_size()[0]//2,self.screen.get_size()[1]//2)
 
 	def menu(self):
 		'''Chiamare alla fine del menu surclassato.
@@ -487,11 +505,21 @@ class GameTable(Menu):
 			self.updater.add(self.bgdark)
 			self.updater.add(self.last)
 
+	def add_messagebox(self,text,title,buttons):
+		'''Crea e mostra una messagebox con il dark background.'''
+
+		self.updater.add(self.bgdark)
+
+		msgbox = Menu.message_box(self,text,title,buttons)
+		self.updater.add(msgbox)
+
+		return msgbox
+
 	def cancel_multilines(self):
-		'''Rimuove tutti i MultilineText e l'eventuale dark background.'''
+		'''Rimuove tutti i MultilineText (tranne le MessageBox) e l'eventuale dark background.'''
 
 		for sp in self.updater.sprites():
-			if isinstance(sp,objects.MultilineText):
+			if isinstance(sp,objects.MultilineText) and not isinstance(sp,objects.MessageBox):
 				sp.kill()
 
 			if sp == self.bgdark: sp.kill()
@@ -526,7 +554,11 @@ class GameTable(Menu):
 
 						if key: self.callback(key)
 
-				if event.type == pygame.MOUSEBUTTONDOWN:
+				elif event.type == pygame.MOUSEBUTTONDOWN:
+
+					self.callback(-event.button,event.pos)
+
+				elif event.type == pygame.MOUSEBUTTONUP:
 
 					self.callback(event.button,event.pos)
 
@@ -593,8 +625,16 @@ if __name__ == '__main__':
 
 	def callback_ciao(num,pos=None):
 		p.score.kill()
+
+		if pos != None and hasattr(p,'msgbox'):
+			#print p.msgbox._click(pos)
+			p.msgbox._mousedown(pos)
+			return
+
 		if num == 'f1':
-			p.updater.add(objects.MessageBox(GREEN,LGREEN,BLACK,"Avviso",(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2),("Bella zio!",)))
+			p.msgbox = objects.MessageBox(GREEN,LGREEN,BLACK,"Avviso",(p.screen.get_size()[0]//2,p.screen.get_size()[1]//2),"Bella zio!",
+			 ("OK","Annulla","Riprova"))
+			p.updater.add(p.msgbox)
 
 		if num:
 

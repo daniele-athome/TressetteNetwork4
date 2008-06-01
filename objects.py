@@ -32,8 +32,9 @@ TEXTBOX2=20			# dimensione (in pixel) del font delle textbox per gli accusi
 TITLE=40			# dimensione (in pixel) del font del titolo della casella di testo
 LINE=12				# spessore della linea che separa titolo da testo nella casella di testo
 CARD_OFFSET=2		# distanza tra le carte (solo per SIDE_BOTTOM)
-BTN_SIZE=(100,50)	# grandezza pulsante (MessageBox)
+BTN_SIZE=(100,30,30)# grandezza pulsante (width,height,font) (MessageBox)
 BTN_OFFSET=5		# distanza tra i pulsanti (MessageBox)
+BTN_BORDER=7		# bordo pulsante
 
 class TextLabel(pygame.sprite.Sprite):
 	'''Una scritta da poter mettere dove si vuole.'''
@@ -832,15 +833,93 @@ class MessageBox(MultilineText):
 	'''MessageBox costruita con il MultilineText.'''
 
 	def __init__(self, bg_color, out_color, color, title, center = (0,0), text = '', buttons = ('OK',)):
-		MultilineText.__init__(self, (500,200), bg_color, out_color, color, title, text, center)
+		MultilineText.__init__(self, (500,200), bg_color, out_color, color, title, center=center)
 
 		self.buttons = buttons
+		self.rects = []
+		self.selected = -1
+		self.btn_font = miscgui.create_font(BTN_SIZE[2])
+		self.set_text(text)
+
+	def set_text(self,text):
+		'''Converte da testo semplice a testo per MultilineText.'''
+
+		dd = text.split("\n")
+		tlist = []
+
+		for line in dd:
+
+			if len(line) == 0:
+				tlist.append("-")
+
+			else:
+				tlist.append( (line,) )
+			
+		MultilineText.set_text(self,tuple(tlist))
 
 	def update(self):
 		MultilineText.update(self)
 
 		# disegna pulsanti
 		start = (self.size[0] - (BTN_SIZE[0]*len(self.buttons)) - (BTN_OFFSET*len(self.buttons)))//2
-		for b in self.buttons:
-			# TODO
-			pass
+
+		for i in range(0,len(self.buttons)):
+
+			sel = False
+			if i == self.selected: sel = True
+
+			r = self._make_button(i,self.buttons[i],start,sel)
+
+			if len(self.rects) < len(self.buttons):
+				self.rects.append(pygame.Rect(r.left+self.rect.left,r.top+self.rect.top,r.width,r.height))
+
+	def _make_button(self,index,text,start,selected=False):
+		'''Disegna un pulsante.
+
+		index: indice del pulsante
+		text: testo del pulsante
+		start: coordinata X del punto di partenza del primo pulsante
+		'''
+
+		pos = (start + (index * BTN_SIZE[0]) + (index * (BTN_OFFSET*2)),self.size[1]-BTN_SIZE[1]-BTN_BORDER-20)
+		bg = self.bg_color
+		col = self.color
+		if selected:
+			bg = (255,0,0)
+			col = (255,255,255)
+
+		# disegna rettangolo
+		trect = miscgui.draw_rect(self.image,BTN_SIZE[0],BTN_SIZE[1],bg,self.out_color,BTN_BORDER,pos)
+
+		# disegna testo
+		surf = miscgui.draw_text(text,color=col,font=self.btn_font)
+		rect = surf.get_rect()
+		rect.center = trect.center
+		self.image.blit(surf,rect)
+
+		return trect
+
+	def _mousedown(self,pos):
+		'''Event mouse down
+
+		Gestisce l'highlight dei pulsanti premuti.
+		'''
+
+		self.selected = -1
+
+		for i in range(0,len(self.rects)):
+			if self.rects[i].collidepoint(pos):
+				self.selected = i
+
+	def _click(self,pos):
+		'''Evento click
+
+		Restituisce l'indice del pulsante premuto, altrimenti -1.
+		'''
+
+		for i in range(0,len(self.rects)):
+			if self.rects[i].collidepoint(pos):
+				return i
+
+		self.selected = -1
+		return -1

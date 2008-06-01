@@ -30,7 +30,6 @@ PACKAGE=NAME.lower()
 VERSION="0.0.1-rc7"
 AUTHORS=( {"name": "Daniele Ricci", "email" : "daniele.athome@gmail.com"}, )
 
-
 PORT=8154
 SIZE=800,600
 

@@ -29,7 +29,10 @@ def draw_text(text,size=20,color=(0,0,0),bold=False,italic=False,font=None,more_
 
 	return surf
 
-def draw_rect(surface,width,height,bgcolor=(0,0,0),color=(0,0,0),border=0):
+def draw_rect(surface,width,height,bgcolor=None,color=(0,0,0),border=0,pos=(0,0)):
 	'''Disegna un rettangolo sulla superficie.'''
 
-	pygame.draw.rect(surface,color,pygame.Rect([0,0],[width,height]),border)
+	if bgcolor != None:
+		surface.fill(bgcolor,pygame.Rect(pos,(width,height)))
+
+	return pygame.draw.rect(surface,color,pygame.Rect(pos,(width,height)),border)
