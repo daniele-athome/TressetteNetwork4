@@ -71,18 +71,20 @@ class TS4Server(Thread,interfaces.NetEvents):
 		print "(SERVER) Connection closed!",conn
 
 		try:
-			# notifica logout
-			self.conn.send_all(interfaces.NetMethod(protocol.PART,conn.user_data['player'].name))
+			old_player = conn.user_data['player']
+			self.players[old_player.position] = None
 
 			# se siamo arrivati qui vuol dire che il giocatore aveva fatto JOIN, quindi dobbiamo rimettere tutti in WAIT e rimischiare le carte
-			for p in self.players: p.set_state(player.STATE_WAIT)
+			for p in self.players:
+				if p != None:
+					# notifica logout
+					p.conn.send(interfaces.NetMethod(protocol.PART,old_player.name))
+					p.set_state(player.STATE_WAIT)
+
 			self._make_deck()
 
-			# eccolo il buggone!!! questo andava dopo!!!
-			self.players[conn.user_data['player'].position] = None
-
 		except:
-			pass
+			traceback.print_exc()
 
 
 	def error(self,conn,detail):
