@@ -61,6 +61,7 @@ class TextLabel(pygame.sprite.Sprite):
 
 	def set_color(self,color):
 		self.color = color
+		self.stop_animation()
 
 	def update(self,more_space=False,bgcolor=(0,0,0)):
 

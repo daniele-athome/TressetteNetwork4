@@ -569,7 +569,9 @@ class ClientPlayer(Player):
 
 		# richiedi chat
 		elif button == 'f3':
-			self.conn.send(interfaces.NetMethod(protocol.REQ_CHAT))
+			if self.hand_position != self.position:
+				self.conn.send(interfaces.NetMethod(protocol.REQ_CHAT))
+				self.gui.set_chat(None,"sta parlando...")
 
 		elif button == 'escape':
 			self.gui.message_box(self._escape_response,"Terminare la partita?","Esci dal gioco",self.gui.get_buttons("MB_YESNO"))

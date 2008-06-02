@@ -552,6 +552,9 @@ class GameTable(Menu):
 						elif event.key == pygame.K_RETURN:
 							key = 'return'
 
+						elif event.key == pygame.K_SPACE:
+							key = 'space'
+
 						if key: self.callback(key)
 
 				elif event.type == pygame.MOUSEBUTTONDOWN:
