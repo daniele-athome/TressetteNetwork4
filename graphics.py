@@ -217,7 +217,7 @@ class SelectorMenu(Menu):
 		self.updater.add(self.status2)
 
 		# loghetto ;)
-		logo = objects.Image((0,0,255),"logo.png")
+		logo = objects.Image((0,0,255),"data/logo.png")
 		logo.rect.centerx = self.screen.get_size()[0]//2
 		self.updater.add(logo)
 
