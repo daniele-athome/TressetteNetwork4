@@ -210,6 +210,17 @@ class SelectorMenu(Menu):
 		# aggiungi la scritta di stato
 		self.updater.add(self.status)
 
+		# aggiungi la scritta di stato/2
+		self.status2 = objects.TextLabel(BLACK,
+		 "I numeri sui pulsanti rappresentano l'ordine in senso antiorario dei giocatori.",
+		 rightbottom=(self.screen.get_size()[0]-5,self.status.rect.top))
+		self.updater.add(self.status2)
+
+		# loghetto ;)
+		logo = objects.Image((0,0,255),"logo.png")
+		logo.rect.centerx = self.screen.get_size()[0]//2
+		self.updater.add(logo)
+
 	def get_mouse_over(self,mousepos):
 		'''Restituisce il valore del pulsante cliccato.'''
 

@@ -938,3 +938,11 @@ class MessageBox(MultilineText):
 
 		self.selected = -1
 		return -1
+
+class Image(pygame.sprite.Sprite):
+	def __init__(self, alpha_color, img_path):
+		pygame.sprite.Sprite.__init__(self)
+
+		self.image = pygame.image.load(img_path).convert()
+		self.image.set_colorkey(alpha_color)
+		self.rect = self.image.get_rect()
