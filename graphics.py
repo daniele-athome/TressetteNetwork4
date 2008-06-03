@@ -179,14 +179,33 @@ class SelectorMenu(Menu):
 		self.bg.fill(GREEN)
 		self.screen.blit(self.bg,(0,0))
 
-		# TODO: due scritte con due linee per dividere le squadre
-
 		# crea 4 sprite con i quadratini
 		self.cubes = []
+		self.arrange = [0,2,1,3]
 		for i in range(0,4):
 
-			self.cubes.append(objects.PositionButton(GREEN, self.screen.get_size(), i, LGREEN))
-			self.updater.add(self.cubes[i])
+			cube = objects.PositionButton(GREEN, self.arrange[i], LGREEN)
+			cube.rect.left = (self.screen.get_size()[0] // 2) - cube.size*2 - ((objects.BORDER+objects.OFFSET)//2) + cube.size*i+objects.OFFSET*i
+			cube.rect.top = (self.screen.get_size()[1]//2-cube.size//2)
+			self.cubes.append(cube)
+			self.updater.add(cube)
+
+		# due scritte con due linee per dividere le squadre
+		self.hdr = []
+
+		line1 = objects.Line(LGREEN, 'h', objects.RECT*2 + objects.OFFSET, objects.BORDER)
+		line1.rect.left = self.cubes[0].rect.left
+		line1.rect.top = self.cubes[0].rect.top - objects.BORDER
+		text1 = objects.TextLabel(LGREEN, "SQUADRA 1",rightbottom=(None,line1.rect.top),size=objects.TEXTBOX+10,center=(line1.rect.centerx,None))
+		self.updater.add(line1,text1)
+		self.hdr.append( (line1,text1) )
+
+		line2 = objects.Line(LGREEN, 'h', objects.RECT*2 + objects.OFFSET, objects.BORDER)
+		line2.rect.left = self.cubes[2].rect.left
+		line2.rect.top = line1.rect.top
+		text2 = objects.TextLabel(LGREEN, "SQUADRA 2",rightbottom=(None,line2.rect.top),size=objects.TEXTBOX+10,center=(line2.rect.centerx,None))
+		self.updater.add(line2,text2)
+		self.hdr.append( (line2,text2) )
 
 		# aggiungi la scritta di stato
 		self.updater.add(self.status)
@@ -195,14 +214,27 @@ class SelectorMenu(Menu):
 		'''Restituisce il valore del pulsante cliccato.'''
 
 		for s in self.cubes:
-			if s.rect.collidepoint(mousepos): return self.cubes.index(s)+1
+			if s.rect.collidepoint(mousepos): return s.index+1
 
 		return 0
 
 	def update_button(self,index, name, busy, mine):
 		'''Aggiorna un pulsante.'''
 
-		self.cubes[index].set_state(name, busy, mine)
+		self.cubes[self.arrange[index]].set_state(name, busy, mine)
+
+		# controlla se dobbiamo attivare/disattivare l'header
+		ids = (0,1,0,1)
+
+		team = (0,2)[index%2]
+
+		b = self.cubes[team].get_state() and self.cubes[team+1].get_state()
+
+		col = LGREEN
+		if b: col = WHITE
+
+		self.hdr[ids[index]][0].set_color(col)
+		self.hdr[ids[index]][1].set_color(col)
 
 	def menu(self):
 		for event in pygame.event.get():

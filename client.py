@@ -112,6 +112,7 @@ class TS4Client(interfaces.NetEvents):
 		self.plist[pos] = name
 
 	def _position_pressed(self,num,mousepos=None):
+		num = 0
 		if mousepos != None:
 			# calcolo con il mouse
 			num = self.current_menu.get_mouse_over(mousepos)

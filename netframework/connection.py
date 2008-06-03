@@ -202,7 +202,7 @@ class NetServer:
 		'''Stops all threads.'''
 
 		while len(self.threads) > 0:
-			self.threads[0].connection.close()
+			#self.threads[0].connection.close()
 			self.threads[0].stop()
 			# list element will be removed by the connection itself
 

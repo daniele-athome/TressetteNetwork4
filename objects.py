@@ -24,7 +24,7 @@ from __future__ import division
 import sys
 import pygame,miscgui,deck
 
-RECT=130			# dimensione rettangolo selezione posizione
+RECT=150			# dimensione rettangolo selezione posizione
 BORDER=20			# bordo rettangolo selezione e rettangolo casella di testo
 OFFSET=10			# distanza tra i pulsanti di selezione (usato anche in TableReplay -- distanza fra le carte)
 TEXTBOX=30			# dimensione (in pixel) del font della textbox
@@ -39,7 +39,7 @@ BTN_BORDER=7		# bordo pulsante
 class TextLabel(pygame.sprite.Sprite):
 	'''Una scritta da poter mettere dove si vuole.'''
 
-	def __init__(self, color, text = '', position = (0,0), rightbottom = (None, None), rightlimit = False, size = TEXTBOX):
+	def __init__(self, color, text = '', position = (0,0), rightbottom = (None, None), rightlimit = False, size = TEXTBOX, center = (None,None)):
 		pygame.sprite.Sprite.__init__(self)
 
 		self.color = color
@@ -49,7 +49,7 @@ class TextLabel(pygame.sprite.Sprite):
 
 		self.stop_animation()
 
-		self.set_position(position,rightbottom,rightlimit)
+		self.set_position(position,rightbottom,rightlimit,center)
 		self.update()
 
 	def set_text(self,text):
@@ -82,10 +82,11 @@ class TextLabel(pygame.sprite.Sprite):
 
 		self._make_text(more_space,bgcolor)
 
-	def set_position(self, xy, rightbottom = (None, None), rightlimit = False):
+	def set_position(self, xy, rightbottom = (None, None), rightlimit = False, center = (None,None)):
 		self.position = xy
 		self.rightbottom = rightbottom
 		self.rightlimit = rightlimit
+		self.center = center
 
 	def _make_text(self,more_space=False,bgcolor=(0,0,0)):
 		self.image = miscgui.draw_text(self.text,self.size,self.current_color,font=self.font,more_space=more_space,bgcolor=bgcolor)
@@ -101,6 +102,12 @@ class TextLabel(pygame.sprite.Sprite):
 
 		if self.rightlimit:
 			self.rect.right = self.rightlimit
+
+		if self.center[0] != None:
+			self.rect.centerx = self.center[0]
+
+		if self.center[1] != None:
+			self.rect.centery = self.center[1]
 
 	def animate_highlight(self,hl_color):
 		'''Lampeggia la scritta nel colore dato per 3 volte.'''
@@ -318,14 +325,12 @@ class StatusText(TextLabel):
 class PositionButton(pygame.sprite.Sprite):
 	'''Un singolo pulsante per il selettore di posizione.'''
 
-	def __init__(self, bg_color, screen_size, index, bl_color):
+	def __init__(self, bg_color, index, bl_color):
 		pygame.sprite.Sprite.__init__(self)
 
-		self.screen_size = screen_size
 		self.index = index
-		self.size = 150
+		self.size = RECT
 		self.bg_color = bg_color
-		self.left = int(self.screen_size[0] / 2) - self.size*2 - int((BORDER+OFFSET)/2)
 
 		self.old_color = bl_color
 		self.color = bl_color
@@ -356,8 +361,6 @@ class PositionButton(pygame.sprite.Sprite):
 	def _make_rect(self):
 		self.image.fill(self.bg_color)
 		miscgui.draw_rect(self.image,self.size,self.size,self.bg_color,self.color,BORDER)
-		self.rect.top = int(self.screen_size[1]/2-self.size/2)
-		self.rect.left = self.left+self.size*self.index+OFFSET*self.index
 
 	def set_state(self, name = '', busy=False, mine=False):
 		'''Imposta lo stato del pulsante.
@@ -374,6 +377,11 @@ class PositionButton(pygame.sprite.Sprite):
 			self.color = (255, 0, 0)
 
 		self.name = name
+
+	def get_state(self):
+		'''Restituisce True se busy o mine e' True.'''
+
+		return (self.color == (255, 255, 255) or self.color == (255,0,0))
 
 # posizioni in senso antiorario
 SIDE_BOTTOM=0
@@ -683,26 +691,32 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 class Line(pygame.sprite.Sprite):
 	'''Il nome della classe parla da solo.'''
 
-	def __init__(self, color, direction, length):
+	def __init__(self, color, direction, length, width = 4):
 		pygame.sprite.Sprite.__init__(self)
 
-		width = 4
-		x = length
-		y = 0
-		start = (0,0)
-		end = None
+		self.length = length
+		self.width = width
+		self.color = color
 		wh = None
 
 		if direction == 'h':
-			wh = (x,width)
-			end = (length,0)
+			wh = (length,width)
+			self.end = (length,0)
 
 		elif direction == 'v':
-			wh = (width,x)
-			end = (0,length)
+			wh = (width,length)
+			self.end = (0,length)
 
-		self.image = pygame.surface.Surface(wh)
-		self.rect = pygame.draw.line(self.image,color,start,end,width)
+		dummy = pygame.surface.Surface(wh)
+		rect = pygame.draw.line(dummy,self.color,(0,0),self.end,self.width)
+		self.image = pygame.surface.Surface((rect.width,rect.height))
+		self.rect = pygame.draw.line(self.image,self.color,(0,0),self.end,self.width)
+
+	def update(self):
+		pygame.draw.line(self.image,self.color,(0,0),self.end,self.width)
+
+	def set_color(self,color):
+		self.color = color
 
 class MultilineText(pygame.sprite.Sprite):
 	'''Casella di testo multilinea.'''
