@@ -1,5 +1,5 @@
 include TODO COPYING *.bat MANIFEST.in INSTALL
-graft cards
+graft data
 graft metaserver
 graft win32
 graft TressetteNetwork4.xcodeproj

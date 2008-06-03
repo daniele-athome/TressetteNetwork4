@@ -69,7 +69,7 @@ class Deck:
 
 		return tuple(c)
 
-BASE_PATH="cards/piacentine"
+BASE_PATH="data/cards/piacentine"
 BASE_EXT=".jpg"
 
 def get_card_image_path(card_num,num_per_seem=DEFAULT_NUM_PER_SEEM):

@@ -14,5 +14,5 @@ setup(	name		= main.PACKAGE,
 		scripts		= ['tressettenetwork4', 'ts4launcher'],
 		license		= 'GNU GPL v2',
 		requires	= ['wx'],
-		package_data= { '': ['cards/piacentine*.jpg'] }
+		package_data= { '': ['data/*'] }
 )
