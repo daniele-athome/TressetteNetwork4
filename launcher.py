@@ -307,14 +307,18 @@ class LauncherWindow(wx.Dialog):
 
 				name = self.name.GetValue().strip()
 				if len(name) > 0:
-					newname = ''
-					for i in range(0,len(name)):
-						if name[i] == ' ':
-							# inserisci spazio prima
-							newname = newname + '\\'
-						newname += name[i]
+					if os.name == 'nt':
+						argv.append('name="'+name+'"')
 
-					argv.append('name='+newname)
+					else:
+						newname = ''
+						for i in range(0,len(name)):
+							if name[i] == ' ':
+								# inserisci spazio prima
+								newname = newname + '\\'
+							newname += name[i]
+
+						argv.append('name='+newname)
 
 				if(not self.autochat.GetValue()):
 					argv.append('chat=manual')
