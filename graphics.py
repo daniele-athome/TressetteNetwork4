@@ -265,7 +265,9 @@ class SelectorMenu(Menu):
 
 					if event.key == pygame.K_SPACE:
 						key = 'space'
-						#print "(GFX) Pressed spacebar"
+
+					elif event.key == pygame.K_ESCAPE:
+						key = 'escape'
 
 					if key: self.callback(key)
 

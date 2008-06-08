@@ -112,7 +112,9 @@ class TS4Client(interfaces.NetEvents):
 		self.plist[pos] = name
 
 	def _position_pressed(self,num,mousepos=None):
-		num = 0
+		if num == 'escape':
+			self.goto_menu('exit')
+
 		if mousepos != None:
 			# calcolo con il mouse
 			num = self.current_menu.get_mouse_over(mousepos)
@@ -120,7 +122,7 @@ class TS4Client(interfaces.NetEvents):
 		if num > 0 and num <= 4:
 			self.conn.send(interfaces.NetMethod(protocol.JOIN,self.name,num-1))
 			self.join_sent = True
-			self.activate_keyboard(None)
+			self.activate_keyboard(self._no_callback)
 			self.set_status("Un momento...")
 
 	def join_player(self,conn,name,position,error=None):
@@ -224,10 +226,17 @@ class TS4Client(interfaces.NetEvents):
 			self.current_menu.set_status(status)
 			self.current_menu.status_highlight()
 
+	def _no_callback(self, key, mousepos = None):
+		if key == 'escape':
+			self.goto_menu('exit')
+
 	# funzione hackata (vedi mousepos) per ricominciare la partita
 	def _spacebar_pressed(self, key, mousepos = None):
-		if key == 'space':
-			self.activate_keyboard(None)
+		if key == 'escape':
+			self.goto_menu('exit')
+
+		elif key == 'space':
+			self.activate_keyboard(self._no_callback)
 
 			if self._ending:
 				self.goto_menu('statistics',None,self.player.stats)
