@@ -19,5 +19,4 @@ Dependencies
 
 Portability
 ======================================
-TS4 has been tested successfully tested on Linux, Mac OS X 10.4+ and Windows XP.
-
+TS4 has been tested successfully tested with Python 2.5 on Linux, Mac OS X 10.4+ and Windows XP.
