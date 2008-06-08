@@ -403,7 +403,6 @@ class Card(pygame.sprite.Sprite):
 		self.screen = screen
 		self._anim = False
 		self._draw_rect = draw_rect
-		self._bg_color = bg_color
 
 	def set_card_num(self,card_num):
 		self.card_num = card_num
@@ -489,7 +488,7 @@ class Card(pygame.sprite.Sprite):
 			self.rect.topleft = (x,y)
 
 		if self._draw_rect:
-			miscgui.draw_rect(self.image,self.rect.width,self.rect.height,self._bg_color,(255,0,0),border=5)
+			miscgui.draw_rect(self.image,self.rect.width,self.rect.height,None,(255,0,0),border=5)
 
 class CardGroup(pygame.sprite.OrderedUpdates):
 	'''Gruppo di carte per un singolo giocatore.
