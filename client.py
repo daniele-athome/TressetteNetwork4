@@ -20,13 +20,14 @@
 #
 # * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 
+import traceback
 import pygame,sys,os,signal
 import netframework,protocol,main,player,graphics,objects
 from netframework import interfaces,connection
 
 class TS4Client(interfaces.NetEvents):
 
-	def __init__(self,app,name,server,size,manualchat):
+	def __init__(self,app,name,server,size,fullscreen,manualchat):
 
 		self.app = app
 		self.server = server
@@ -39,13 +40,13 @@ class TS4Client(interfaces.NetEvents):
 		self._ending = False		# flag interno -- indica se stiamo finendo la partita
 
 		try:
-			self.win_icon = pygame.image.load("data/tsnet4.png").convert_alpha()
+			self.win_icon = pygame.image.load("data/tsnet4.png")
+			self.win_icon.set_colorkey((0,0,255))
 		except:
-			import traceback
 			traceback.print_exc()
 			self.win_icon = None
 
-		self.display = graphics.Display(size,' v'.join((main.NAME,main.VERSION)),self.win_icon)
+		self.display = graphics.Display(size,' v'.join((main.NAME,main.VERSION)),fullscreen,self.win_icon)
 		self.current_menu = self.display
 		self.msgbox = None
 

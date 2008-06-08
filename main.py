@@ -49,6 +49,7 @@ class TS4App:
 		# argomenti predefiniti
 		self.size = SIZE
 		self.manualchat = False
+		self.fullscreen = False
 
 		# se siamo su windows, prendi hostname come nome
 		if os.name == "nt":
@@ -133,6 +134,9 @@ class TS4App:
 					output_command('main','bad-argument')
 					return EXIT_FAILURE
 
+			elif arg == 'fullscreen':
+				self.fullscreen = True
+
 			elif arg == 'standalone':
 				self.standalone = True
 
@@ -177,7 +181,7 @@ class TS4App:
 		try:
 			# il client si connettera' al giusto server...
 			import client
-			self.manager = client.TS4Client(self,self.name,self.server,self.size,self.manualchat)
+			self.manager = client.TS4Client(self,self.name,self.server,self.size,self.fullscreen,self.manualchat)
 			r = self.manager.run()
 
 		except:
@@ -201,6 +205,7 @@ class TS4App:
 		print "\nClient options:"
 		print "\tname=name\t\tSet player name"
 		print "\tsize=width,height\tCustom client window size (min "+str(SIZE[0])+","+str(SIZE[1])+")"
+		print "\tfullscreen\t\tStarts in fullscreen"
 		print "\tserver=host:port\tConnect to the specified server"
 		print "\nWithout any server= option, a server will be started along the client."
 

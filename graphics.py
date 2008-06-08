@@ -137,14 +137,20 @@ class Menu:
 class Display(Menu):
 	'''Menu schermo bianco (verde in effetti).'''
 
-	def __init__(self,size,title,icon=None):
+	def __init__(self,size,title,fullscreen=False,icon=None):
 		# ora che e' tutto a posto, inizializza pygame
 		pygame.init()
 
-		# crea lo schermo
+		# imposta l'icona della finestra
 		if icon != None:
 			pygame.display.set_icon(icon)
-		Menu.__init__(self,pygame.display.set_mode(size))
+
+		# crea lo schermo
+		flags = 0
+		if fullscreen:
+			flags = pygame.FULLSCREEN|pygame.NOFRAME
+
+		Menu.__init__(self,pygame.display.set_mode(size,flags))
 		pygame.display.set_caption(title)
 		pygame.key.set_repeat(400,50)
 
