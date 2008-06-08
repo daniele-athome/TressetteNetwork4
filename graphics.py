@@ -110,7 +110,7 @@ class Menu:
 		for i in delete:
 			del self.timeouts[i]
 
-		self.clock.tick(100)
+		self.clock.tick(30)
 
 		tmp = self.goto
 		self.goto = None
