@@ -23,6 +23,8 @@
 $config['dbname'] = 'servers.db';
 $config['table'] = 'servers';
 
+$config['default-port'] = 8154;
+
 # stampa l'header della pagina
 function template_header() {
 	print <<<EOT
@@ -52,27 +54,35 @@ function template_header() {
 
 <hr/>
 
-<table align="center" rules="groups" width="75%" border="2">
-
 
 EOT;
 }
 
 # stampa il footer della pagina
 function template_footer() {
-	print <<<EOT
-</tbody>
-
-</table>
+?>
 
 </body>
 </html>
 
-EOT;
+<?php
+}
+
+function template_table_footer() {
+?>
+
+</tbody>
+
+</table>
+
+<?php
 }
 
 function template_table_header() {
-	print <<<EOT
+?>
+
+<table align="center" rules="groups" width="75%" border="2">
+
 <thead>
 
 <!-- table header -->
@@ -87,7 +97,16 @@ function template_table_header() {
 
 <tbody>
 
-EOT;
+<?php
+}
+
+function template_no_results() {
+?>
+<p align="center">
+<b>Nessun risultato.</b>
+</p>
+
+<?php
 }
 
 function template_entry($host,$port,$name,$desc) {
@@ -173,21 +192,29 @@ if (array_key_exists('op',$_GET)) {
 
 		$name = return_has_key($_GET,'name');
 		$host = return_has_key($_GET,'host');
-		$port = intval(return_has_key($_GET,'port'));
+		$port = return_has_key($_GET,'port');
+		if ($port == null) {
+			$port = $config['default-port'];
+		}
 		$desc = return_has_key($_GET,'desc');
 		print register_server($db,$config['table'],$host,$port,$name,$desc);
 	}
 
 	elseif ($_GET['op'] == 'list') {
 		template_header();
-		template_table_header();
 		$name = return_has_key($_GET,'name',true);
 		$host = return_has_key($_GET,'host',true);
-		$port = intval(return_has_key($_GET,'port'),true);
+		$port = intval(return_has_key($_GET,'port',true));
 		$desc = return_has_key($_GET,'desc',true);
 		$tot = get_server_list($db,$config['table'],$host,$port,$name,$desc);
-		foreach ($tot as $val) {
-			template_entry($val['host'],$val['port'],$val['name'],$val['desc']);
+		if (count($tot) == 0) {
+			template_no_results();
+		} else {
+			template_table_header();
+			foreach ($tot as $val) {
+				template_entry($val['host'],$val['port'],$val['name'],$val['desc']);
+			}
+			template_table_footer();
 		}
 		template_footer();
 	}
