@@ -38,7 +38,14 @@ class TS4Client(interfaces.NetEvents):
 		self.plist = ['','','','']
 		self._ending = False		# flag interno -- indica se stiamo finendo la partita
 
-		self.display = graphics.Display(size,' v'.join((main.NAME,main.VERSION)))
+		try:
+			self.win_icon = pygame.image.load("data/tsnet4.png").convert_alpha()
+		except:
+			import traceback
+			traceback.print_exc()
+			self.win_icon = None
+
+		self.display = graphics.Display(size,' v'.join((main.NAME,main.VERSION)),self.win_icon)
 		self.current_menu = self.display
 		self.msgbox = None
 
