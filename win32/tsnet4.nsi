@@ -131,6 +131,7 @@ Section "TressetteNetwork4" SEC01
   File "..\cards\piacentine7.jpg"
   File "..\cards\piacentine8.jpg"
   File "..\cards\piacentine9.jpg"
+  SetOutPath "$INSTDIR"
 
 ; Shortcuts
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
