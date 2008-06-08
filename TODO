@@ -9,7 +9,7 @@ Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython in .mpkg
 Release 0.0.2
 ==============================
 Gioco con password
-Metaserver per registrare i server di gioco
+Metaserver stabile per registrare i server di gioco
 Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
 
 Release 0.0.3
