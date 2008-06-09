@@ -99,25 +99,21 @@ class TS4App:
 					self.client = False
 
 				try:
-					svr = arg.split('=')[1].split(':')
-					if len(svr) == 2:
-						port = int(svr[1])
-						if port < 1 or port > 65536: raise ValueError("invalid port value")
+					svr = arg.split('=')[1]
 
-						# ok, server accepted
-						self.server = (svr[0],port)
+					# aggiungi lo scheme se non c'e'
+					if "tsnet4://" not in svr:
+						svr = "tsnet4://" + svr
 
-						continue
+					uri = self.parse_uri(svr)
 
-					else:
-						if svr[0].isdigit():
-							self.server = ('', int(svr[0]))
-						else:
-							self.server = (svr[0],PORT)
+					self.server = (uri[1],uri[2])
+					print self.server
 
 				except:
 					traceback.print_exc()
-					print "Invalid server= argument, format is server=host:port"
+					print arg
+					print "Invalid server= argument, format is server=[tsnet4://]host:port"
 					output_command('main','bad-argument')
 					return EXIT_FAILURE
 
@@ -222,9 +218,50 @@ class TS4App:
 		except:
 			print "Pygame not installed."
 
+	def parse_uri(self,uri):
+		'''Parsa un URI.'''
+
+		scheme = ''
+		start = 0
+		if '://' in uri:
+			# abbiamo uno schema
+			scheme = uri[:uri.find('://')]
+			start = uri.find('://')+3
+
+		slash_pos = uri.find('/',start)
+		if slash_pos < 0: slash_pos = len(uri)
+
+		host = uri[start:slash_pos]
+
+		sp = host.split(':')
+
+		if sp[0].isdigit():
+			host = ''
+			port = int(sp[0])
+		else:
+			host = sp[0]
+			port = PORT
+
+		try:
+			port = int(sp[1])
+		except:
+			if len(sp) > 1:
+				raise ValueError("invalid port value")
+
+		if port < 1 or port > 65536: raise ValueError("invalid port value")
+
+		print scheme,host,port
+		return scheme,host,port
+
 def _main():
+	# chdir to our directory
+	curdir = os.path.dirname(os.path.abspath(__file__))
+	print "(MAIN) Namespace file is",__file__
+	print "(MAIN) Switching to directory:",curdir
+	os.chdir(curdir)
+
 	app = TS4App()
-	exit(app.run(sys.argv))
+	return app.run(sys.argv)
 
 if __name__ == '__main__':
-	_main()
+	sys.exit(_main())

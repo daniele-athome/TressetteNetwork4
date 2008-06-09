@@ -13,10 +13,10 @@ Abort
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define PRODUCT_STARTMENU_REGVAL "NSIS:StartMenuDir"
-
-!ifdef PYTHON
+!define PRODUCT_URI_HANDLER "tsnet4"
 !define PYTHON_PATH_KEY "Software\Python\PythonCore\2.5\InstallPath"
-!endif
+Var PYTHON_EXE
+
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -178,6 +178,17 @@ Section "wxPython 2.8" SEC04
 SectionEnd
 !endif
 
+Section "Registra URL ${PRODUCT_URI_HANDLER}://" SEC05
+  DetailPrint "Registro il gestore per gli URI ${PRODUCT_URI_HANDLER}://"
+  DeleteRegKey HKCR "${PRODUCT_URI_HANDLER}"
+  WriteRegStr HKCR "${PRODUCT_URI_HANDLER}" "" "URL:${PRODUCT_URI_HANDLER}"
+  WriteRegStr HKCR "${PRODUCT_URI_HANDLER}" "URL Protocol" ""
+  WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\DefaultIcon" "" "$PYTHON_EXE\python.exe"
+  WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\shell" "" ""
+  WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\shell\Open" "" ""
+  WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\shell\Open\command" "" "$PYTHON_EXE\python.exe $INSTDIR\main.pyc server=%1"
+SectionEnd
+
 Section -AdditionalIcons
   SetOutPath $INSTDIR
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -196,20 +207,22 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
 SectionEnd
 
-!ifdef PYTHON
 Function .onInit
-  ReadRegStr $0 HKLM ${PYTHON_PATH_KEY} ""
-  StrCmp $0 "" notPython contPy
+  ReadRegStr $PYTHON_EXE HKLM ${PYTHON_PATH_KEY} ""
+  StrCmp $PYTHON_EXE "" notPython contPy
 
-  ReadRegStr $0 HKCU ${PYTHON_PATH_KEY} ""
-  StrCmp $0 "" notPython
+  ReadRegStr $PYTHON_EXE HKCU ${PYTHON_PATH_KEY} ""
+  StrCmp $PYTHON_EXE "" notPython
 
 contPy:
+!ifdef PYTHON
   SectionGetFlags ${SEC02} $1
   IntOp $1 $1 - ${SF_SELECTED}
   SectionSetFlags ${SEC02} $1
 
+!endif
 notPython:
+!ifdef PYTHON
   IfFileExists "$0\Lib\site-packages\pygame*" 0 notPygame
 
   SectionGetFlags ${SEC03} $1
@@ -224,8 +237,8 @@ notPygame:
   SectionSetFlags ${SEC04} $1
 
 notWx:
-FunctionEnd
 !endif
+FunctionEnd
 
 ; Section descriptions
 !ifdef PYTHON
@@ -234,13 +247,9 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installa Python 2.5 per Windows."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Installa la libreria Pygame - necessaria per il gioco."
   !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installa la libreria wxPython - necessaria per l'interfaccia grafica."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installa il gestore per gli URL ${PRODUCT_URI_HANDLER}://"
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 !endif
-
-;Function un.onUninstSuccess
-;  HideWindow
-;  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) � stato completamente rimosso dal tuo computer."
-;FunctionEnd
 
 Function un.onInit
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Sei sicuro di voler completamente rimuovere $(^Name) e tutti i suoi componenti?" IDYES +2
@@ -259,47 +268,49 @@ Section Uninstall
   Delete "$INSTDIR\netframework\loop.pyc"
   Delete "$INSTDIR\netframework\interfaces.pyc"
   Delete "$INSTDIR\netframework\connection.pyc"
-  Delete "$INSTDIR\cards\piacentine9.jpg"
-  Delete "$INSTDIR\cards\piacentine8.jpg"
-  Delete "$INSTDIR\cards\piacentine7.jpg"
-  Delete "$INSTDIR\cards\piacentine6.jpg"
-  Delete "$INSTDIR\cards\piacentine5.jpg"
-  Delete "$INSTDIR\cards\piacentine41.jpg"
-  Delete "$INSTDIR\cards\piacentine40.jpg"
-  Delete "$INSTDIR\cards\piacentine4.jpg"
-  Delete "$INSTDIR\cards\piacentine39.jpg"
-  Delete "$INSTDIR\cards\piacentine38.jpg"
-  Delete "$INSTDIR\cards\piacentine37.jpg"
-  Delete "$INSTDIR\cards\piacentine36.jpg"
-  Delete "$INSTDIR\cards\piacentine35.jpg"
-  Delete "$INSTDIR\cards\piacentine34.jpg"
-  Delete "$INSTDIR\cards\piacentine33.jpg"
-  Delete "$INSTDIR\cards\piacentine32.jpg"
-  Delete "$INSTDIR\cards\piacentine31.jpg"
-  Delete "$INSTDIR\cards\piacentine30.jpg"
-  Delete "$INSTDIR\cards\piacentine3.jpg"
-  Delete "$INSTDIR\cards\piacentine29.jpg"
-  Delete "$INSTDIR\cards\piacentine28.jpg"
-  Delete "$INSTDIR\cards\piacentine27.jpg"
-  Delete "$INSTDIR\cards\piacentine26.jpg"
-  Delete "$INSTDIR\cards\piacentine25.jpg"
-  Delete "$INSTDIR\cards\piacentine24.jpg"
-  Delete "$INSTDIR\cards\piacentine23.jpg"
-  Delete "$INSTDIR\cards\piacentine22.jpg"
-  Delete "$INSTDIR\cards\piacentine21.jpg"
-  Delete "$INSTDIR\cards\piacentine20.jpg"
-  Delete "$INSTDIR\cards\piacentine2.jpg"
-  Delete "$INSTDIR\cards\piacentine19.jpg"
-  Delete "$INSTDIR\cards\piacentine18.jpg"
-  Delete "$INSTDIR\cards\piacentine17.jpg"
-  Delete "$INSTDIR\cards\piacentine16.jpg"
-  Delete "$INSTDIR\cards\piacentine15.jpg"
-  Delete "$INSTDIR\cards\piacentine14.jpg"
-  Delete "$INSTDIR\cards\piacentine13.jpg"
-  Delete "$INSTDIR\cards\piacentine12.jpg"
-  Delete "$INSTDIR\cards\piacentine11.jpg"
-  Delete "$INSTDIR\cards\piacentine10.jpg"
-  Delete "$INSTDIR\cards\piacentine1.jpg"
+  Delete "$INSTDIR\data\cards\piacentine9.jpg"
+  Delete "$INSTDIR\data\cards\piacentine8.jpg"
+  Delete "$INSTDIR\data\cards\piacentine7.jpg"
+  Delete "$INSTDIR\data\cards\piacentine6.jpg"
+  Delete "$INSTDIR\data\cards\piacentine5.jpg"
+  Delete "$INSTDIR\data\cards\piacentine41.jpg"
+  Delete "$INSTDIR\data\cards\piacentine40.jpg"
+  Delete "$INSTDIR\data\cards\piacentine4.jpg"
+  Delete "$INSTDIR\data\cards\piacentine39.jpg"
+  Delete "$INSTDIR\data\cards\piacentine38.jpg"
+  Delete "$INSTDIR\data\cards\piacentine37.jpg"
+  Delete "$INSTDIR\data\cards\piacentine36.jpg"
+  Delete "$INSTDIR\data\cards\piacentine35.jpg"
+  Delete "$INSTDIR\data\cards\piacentine34.jpg"
+  Delete "$INSTDIR\data\cards\piacentine33.jpg"
+  Delete "$INSTDIR\data\cards\piacentine32.jpg"
+  Delete "$INSTDIR\data\cards\piacentine31.jpg"
+  Delete "$INSTDIR\data\cards\piacentine30.jpg"
+  Delete "$INSTDIR\data\cards\piacentine3.jpg"
+  Delete "$INSTDIR\data\cards\piacentine29.jpg"
+  Delete "$INSTDIR\data\cards\piacentine28.jpg"
+  Delete "$INSTDIR\data\cards\piacentine27.jpg"
+  Delete "$INSTDIR\data\cards\piacentine26.jpg"
+  Delete "$INSTDIR\data\cards\piacentine25.jpg"
+  Delete "$INSTDIR\data\cards\piacentine24.jpg"
+  Delete "$INSTDIR\data\cards\piacentine23.jpg"
+  Delete "$INSTDIR\data\cards\piacentine22.jpg"
+  Delete "$INSTDIR\data\cards\piacentine21.jpg"
+  Delete "$INSTDIR\data\cards\piacentine20.jpg"
+  Delete "$INSTDIR\data\cards\piacentine2.jpg"
+  Delete "$INSTDIR\data\cards\piacentine19.jpg"
+  Delete "$INSTDIR\data\cards\piacentine18.jpg"
+  Delete "$INSTDIR\data\cards\piacentine17.jpg"
+  Delete "$INSTDIR\data\cards\piacentine16.jpg"
+  Delete "$INSTDIR\data\cards\piacentine15.jpg"
+  Delete "$INSTDIR\data\cards\piacentine14.jpg"
+  Delete "$INSTDIR\data\cards\piacentine13.jpg"
+  Delete "$INSTDIR\data\cards\piacentine12.jpg"
+  Delete "$INSTDIR\data\cards\piacentine11.jpg"
+  Delete "$INSTDIR\data\cards\piacentine10.jpg"
+  Delete "$INSTDIR\data\cards\piacentine1.jpg"
+  Delete "$INSTDIR\data\logo.png"
+  Delete "$INSTDIR\data\tsnet4.png"
   Delete "$INSTDIR\server.pyc"
   Delete "$INSTDIR\protocol.pyc"
   Delete "$INSTDIR\player.pyc"
@@ -316,9 +327,14 @@ Section Uninstall
 
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
   RMDir "$INSTDIR\netframework"
-  RMDir "$INSTDIR\cards"
+  RMDir "$INSTDIR\data\cards"
+  RMDir "$INSTDIR\data"
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
+
+  DetailPrint "Cancello la registrazione del gestore degli URI ${PRODUCT_URI_HANDLER}://"
+  DeleteRegKey HKCR ${PRODUCT_URI_HANDLER}
+
 ;  SetAutoClose true
 SectionEnd
