@@ -1,19 +1,16 @@
 Release 0.0.1-rc8
 ==============================
 Testare, testare, testare, testare, testare e poi TESTARE!
+Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
 
 Release 0.0.1
 ==============================
+Metaserver stabile per registrare i server di gioco
 Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython in .mpkg)
 
 Release 0.0.2
 ==============================
 Gioco con password
-Metaserver stabile per registrare i server di gioco
-Gestione URL tsnet4://server:porta o tsnet4://servername (da metaserver)
-
-Release 0.0.3
-==============================
 Perfezionare chat automatica
 
 Release 0.1.x

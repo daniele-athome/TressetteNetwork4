@@ -31,9 +31,7 @@ Var PYTHON_EXE
 ; License page
 !insertmacro MUI_PAGE_LICENSE "..\COPYING"
 ; Components page
-!ifdef PYTHON
 !insertmacro MUI_PAGE_COMPONENTS
-!endif
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
 ; Start menu page
@@ -95,6 +93,19 @@ Section "TressetteNetwork4" SEC01
   File "..\data\logo.png"
   File "..\data\tsnet4.png"
 
+  SetOutPath "$INSTDIR"
+
+; Shortcuts
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\TressetteNetwork4.lnk" "$INSTDIR\launcher.pyc"
+  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Avvia server.lnk" "$INSTDIR\main.pyc" "standalone"
+
+  !insertmacro MUI_STARTMENU_WRITE_END
+SectionEnd
+
+Section "Carte piacentine" SEC02
+  SectionIn RO
   SetOutPath "$INSTDIR\data\cards"
   File "..\data\cards\piacentine1.jpg"
   File "..\data\cards\piacentine10.jpg"
@@ -137,20 +148,10 @@ Section "TressetteNetwork4" SEC01
   File "..\data\cards\piacentine7.jpg"
   File "..\data\cards\piacentine8.jpg"
   File "..\data\cards\piacentine9.jpg"
-
-  SetOutPath "$INSTDIR"
-
-; Shortcuts
-  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-  CreateDirectory "$SMPROGRAMS\$ICONS_GROUP"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\TressetteNetwork4.lnk" "$INSTDIR\launcher.pyc"
-  CreateShortCut "$SMPROGRAMS\$ICONS_GROUP\Avvia server.lnk" "$INSTDIR\main.pyc" "standalone"
-
-  !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
 !ifdef PYTHON
-Section "Python 2.5" SEC02
+Section "Python 2.5" SEC03
   SetOutPath "$TEMP"
   SetOverwrite on
   File /oname=python.msi "python-2.5*.msi"
@@ -159,7 +160,7 @@ Section "Python 2.5" SEC02
   Delete "$TEMP\python.msi"
 SectionEnd
 
-Section "Pygame 1.8" SEC03
+Section "Pygame 1.8" SEC04
   SetOutPath "$TEMP"
   SetOverwrite on
   File /oname=pygame.msi "pygame-1.8*.msi"
@@ -168,7 +169,7 @@ Section "Pygame 1.8" SEC03
   Delete "$TEMP\pygame.msi"
 SectionEnd
 
-Section "wxPython 2.8" SEC04
+Section "wxPython 2.8" SEC05
   SetOutPath "$TEMP"
   SetOverwrite on
   File /oname=wxpython.exe "wxPython2.8*.exe"
@@ -178,7 +179,7 @@ Section "wxPython 2.8" SEC04
 SectionEnd
 !endif
 
-Section "Registra URL ${PRODUCT_URI_HANDLER}://" SEC05
+Section "Registra URL ${PRODUCT_URI_HANDLER}://" SEC06
   DetailPrint "Registro il gestore per gli URI ${PRODUCT_URI_HANDLER}://"
   DeleteRegKey HKCR "${PRODUCT_URI_HANDLER}"
   WriteRegStr HKCR "${PRODUCT_URI_HANDLER}" "" "URL:${PRODUCT_URI_HANDLER}"
@@ -187,6 +188,13 @@ Section "Registra URL ${PRODUCT_URI_HANDLER}://" SEC05
   WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\shell" "" ""
   WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\shell\Open" "" ""
   WriteRegStr HKCR "${PRODUCT_URI_HANDLER}\shell\Open\command" "" "$PYTHON_EXE\python.exe $INSTDIR\main.pyc server=%1"
+SectionEnd
+
+Section "Icona sul Desktop" SEC07
+  SetOutPath $INSTDIR
+  !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+  CreateShortCut "$DESKTOP\TressetteNetwork4.lnk" "$INSTDIR\launcher.pyc"
+  !insertmacro MUI_STARTMENU_WRITE_END
 SectionEnd
 
 Section -AdditionalIcons
@@ -216,40 +224,42 @@ Function .onInit
 
 contPy:
 !ifdef PYTHON
-  SectionGetFlags ${SEC02} $1
-  IntOp $1 $1 - ${SF_SELECTED}
-  SectionSetFlags ${SEC02} $1
-
-!endif
-notPython:
-!ifdef PYTHON
-  IfFileExists "$0\Lib\site-packages\pygame*" 0 notPygame
-
   SectionGetFlags ${SEC03} $1
   IntOp $1 $1 - ${SF_SELECTED}
   SectionSetFlags ${SEC03} $1
 
-notPygame:
-  IfFileExists "$0\Lib\site-packages\wx.pth" 0 notWx
+!endif
+notPython:
+!ifdef PYTHON
+  IfFileExists "$PYTHON_EXE\Lib\site-packages\pygame*" 0 notPygame
 
   SectionGetFlags ${SEC04} $1
   IntOp $1 $1 - ${SF_SELECTED}
   SectionSetFlags ${SEC04} $1
+
+notPygame:
+  IfFileExists "$PYTHON_EXE\Lib\site-packages\wx.pth" 0 notWx
+
+  SectionGetFlags ${SEC05} $1
+  IntOp $1 $1 - ${SF_SELECTED}
+  SectionSetFlags ${SEC05} $1
 
 notWx:
 !endif
 FunctionEnd
 
 ; Section descriptions
-!ifdef PYTHON
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installa il gioco e tutti i relativi dati."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installa Python 2.5 per Windows."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Installa la libreria Pygame - necessaria per il gioco."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installa la libreria wxPython - necessaria per l'interfaccia grafica."
-  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installa il gestore per gli URL ${PRODUCT_URI_HANDLER}://"
-!insertmacro MUI_FUNCTION_DESCRIPTION_END
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC01} "Installa il gioco e i relativi dati."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC02} "Installa il set di carte piacentine."
+!ifdef PYTHON
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC03} "Installa Python 2.5 per Windows."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC04} "Installa la libreria Pygame - necessaria per il gioco."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC05} "Installa la libreria wxPython - necessaria per l'interfaccia grafica."
 !endif
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC06} "Installa il gestore per gli URL ${PRODUCT_URI_HANDLER}://."
+  !insertmacro MUI_DESCRIPTION_TEXT ${SEC07} "Crea un collegamento a TressetteNetwork4 sul desktop."
+!insertmacro MUI_FUNCTION_DESCRIPTION_END
 
 Function un.onInit
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Sei sicuro di voler completamente rimuovere $(^Name) e tutti i suoi componenti?" IDYES +2
@@ -324,6 +334,7 @@ Section Uninstall
   Delete "$SMPROGRAMS\$ICONS_GROUP\Progetto TSNet4.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\TressetteNetwork4.lnk"
   Delete "$SMPROGRAMS\$ICONS_GROUP\Avvia server.lnk"
+  Delete "$DESKTOP\TressetteNetwork4.lnk"
 
   RMDir "$SMPROGRAMS\$ICONS_GROUP"
   RMDir "$INSTDIR\netframework"
