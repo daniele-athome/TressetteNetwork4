@@ -64,12 +64,12 @@ if [ "$WPYTHON" == "1" ]; then
 
   if [ "$PYGAME_DL" == "1" ]; then
     rm -f "$PYGAME"
-    wget -c "$PYGAME_DL"
+    wget -c "$PYGAME_URL"
   fi
 
   if [ "$WXPYTHON_DL" == "1" ]; then
     rm -f "$WXPYTHON"
-    wget -c "$WXPYTHON_DL"
+    wget -c "$WXPYTHON_URL"
   fi
 
   ARG="-DPYTHON"
