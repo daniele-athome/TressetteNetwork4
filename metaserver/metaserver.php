@@ -179,10 +179,10 @@ function register_server($db,$table,$host,$port,$name,$desc) {
 function get_server_list($db,$table,$host=null,$port=null,$name=null,$desc=null) {
 	$where = "where id > 0";
 
-	if ($host != null) $where .= " and host like '%$host%'";
-	if ($port != null and is_numeric($port)) $where .= " and port = '".intval($port)."'";
-	if ($name != null) $where .= " and name like '%$name%'";
-	if ($desc != null) $where .= " and desc like '%$desc%'";
+	if ($host) $where .= " and host like '%$host%'";
+	if ($port and is_numeric($port)) $where .= " and port = '".intval($port)."'";
+	if ($name) $where .= " and name like '%$name%'";
+	if ($desc) $where .= " and desc like '%$desc%'";
 
 	$res = sqlite_query($db,"select * from $table $where");
 
@@ -230,7 +230,7 @@ if (array_key_exists('op',$_GET)) {
 
 		if (!is_numeric($port_s) or ($port < 1 or $port > 65536)) {
 			$port_s = '';
-			$port = null;
+			$port = 0;
 		}
 
 		$desc = return_has_key($_GET,'desc',null);
