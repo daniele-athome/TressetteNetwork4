@@ -219,6 +219,7 @@ class ClientPlayer(Player):
 		self.last_cards = None		# replay ultimo giro
 		self.current_last = [0, 0, 0, 0]
 		self.manualchat = manualchat
+		self.can_abort = False
 
 	def set_gui(self,gui):
 		'''Imposta l'interfaccia grafica con cui comunicare.'''
@@ -349,6 +350,7 @@ class ClientPlayer(Player):
 		# non siamo noi, setta stato
 		if position != self.position:
 			self.gui.set_status(' '.join((self.gui.get_name_from_position(position),"sta giocando..."))  )
+			self.gui.activate_keyboard(self._card_click)
 
 		else:
 			# siamo di mano, possiamo parlare
@@ -356,8 +358,7 @@ class ClientPlayer(Player):
 				self.gui.set_chat(self.name,"")
 
 				# chat manuale
-				if self.manualchat:
-					self.gui.activate_chat(True)
+				self.gui.activate_chat(True)
 
 
 	def _card_thrown(self,conn,position,card_num,error=None):
@@ -371,6 +372,7 @@ class ClientPlayer(Player):
 			self.gui.activate_keyboard(self._card_click)
 
 		else:
+			self.gui.remove_popups()
 
 			# non siamo noi, rivela la carta
 			if position != self.position:
@@ -379,11 +381,10 @@ class ClientPlayer(Player):
 			else:
 				# parla se siamo di mano
 				if self.hand_position == self.position:
-					msg = ''
-					if self.manualchat:
-						msg = self.gui.get_chat()
-						self.gui.activate_chat(False)
-					else:
+					self.gui.activate_chat(False)
+
+					msg = self.gui.get_chat()
+					if not self.manualchat and msg == '':
 						msg = self.chat_message(card_num)
 
 					conn.send(interfaces.NetMethod(protocol.CHAT,msg))
@@ -459,7 +460,10 @@ class ClientPlayer(Player):
 		print "(CLIENT PLAYER) Position",position,"accuses:",accuses
 
 		# costruisci stringa accusi
-		acc_lines = "Accusa\n"
+		if position != self.position:
+			acc_lines = "Accusa\n"
+		else:
+			acc_lines = ""
 
 		for a in accuses:
 
@@ -503,7 +507,8 @@ class ClientPlayer(Player):
 		if state == STATE_TURNWAIT:
 
 			# disabilita tastiera
-			self.gui.activate_keyboard(None)
+			#self.gui.activate_keyboard(None)
+			self.gui.activate_keyboard(self._card_click)
 
 		elif state == STATE_TURN:
 
@@ -525,8 +530,13 @@ class ClientPlayer(Player):
 				self.stats = GameStats(self.gui.plist)
 			self.stats.hand_begin()
 
+			# flag poverello
+			self.can_abort = deck.can_abort(cards)
+
 			# vai al tavolo di gioco, mostrando la nostre carte sul tavolo
 			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist,False)
+			if self.can_abort == True:
+				self.gui.set_player_subtitle(0, 'Premi F4 per mandare a monte!')
 
 			# nascondi lo score board (se presente)
 			self.gui.update_score_board()
@@ -547,7 +557,7 @@ class ClientPlayer(Player):
 					card = self.gui.get_card_from_mousepos(position)
 					print "(CLIENT PLAYER) Clicked card",card
 
-					if card > 0 and self.current_position == self.position:
+					if card > 0 and self.current_position == self.position and self.state == STATE_TURN:
 						self._send_card(card)
 						self.gui.activate_keyboard(None)
 
@@ -558,6 +568,7 @@ class ClientPlayer(Player):
 			if self.state != STATE_TURN:
 				self.gui.set_status(' '.join((self.gui.get_name_from_position(self.current_position),"sta giocando..."))  )
 				self.gui.activate_chat(False)
+				self.gui.activate_keyboard(self._card_click)
 
 		# multiline di aiuto
 		elif button == 'f1':

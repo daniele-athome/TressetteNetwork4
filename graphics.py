@@ -713,6 +713,7 @@ if __name__ == '__main__':
 					p.set_subtitle(3,"Ciao1\nProva1\nProvone1\nProvolone1\nMinchiarola1\nMerda1")
 					p.set_subtitle(2,"Ciao2\nProva2")
 					p.set_subtitle(1,"Ciao3\nProva3")
+					p.set_subtitle(0,"Accuso!\ntre due mancante bastoni\nnapoli a coppe")
 					p.throw_card(0,cards[0])
 					p.first = False
 

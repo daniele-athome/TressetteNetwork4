@@ -1,5 +1,9 @@
 Release 0.0.2
 ==============================
+Mandata a monte per poverello
+Correzione interpretazione tasti durante chat o blocco tasti
+Visualizzazione accusi per se stesso
+
 Launcher: checkbox per fullscreen
 Metaserver stabile per registrare i server di gioco
 Installer per Mac OS X (incapsulato in DMG, includere Pygame e wxPython in .mpkg)

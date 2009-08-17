@@ -146,6 +146,21 @@ def get_tressette_cards(cards,num_per_seem=DEFAULT_NUM_PER_SEEM):
 
 	return ret
 
+def can_abort(cards, num_per_seem=DEFAULT_NUM_PER_SEEM):
+	'''Determina se possiamo mandare a monte per poverello.'''
+
+	fig_count = 0
+	for c in cards:
+		if c in (1,2,3):
+			return False
+
+		if c in (8,9,10):
+			fig_count = fig_count + 1
+			if (fig_count >= 4):
+				return False
+
+	return True
+
 if __name__ == '__main__':
 	a = Deck(4,10)
 

@@ -301,6 +301,9 @@ class TextEntry(TextLabel):
 			self.cursor_start()
 			ret = True
 
+		elif event.key == pygame.K_ESCAPE:
+			ret = False
+
 		else:
 			if len(event.unicode) == 1:
 				if event.unicode not in blacklist:
@@ -570,10 +573,15 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 			right = self.sprites()[0].rect.left - 5
 			bottom = self.sprites()[1].rect.bottom
 
-		# sottotitolo per side != SIDE_BOTTOM
 
+		# prepara il titolo
+		self.title = TextLabel((0,0,0),title,(left,top),(None,None),right)
+
+		# prepara sottotitoli
+		self.subtitle = []
+
+		# sottotitolo per side != SIDE_BOTTOM
 		if side != SIDE_BOTTOM:
-			self.subtitle = []
 			self.subtitle.append(TextLabel((255,255,0),'',(subleft,subtop),(right,bottom)))
 			pygame.sprite.OrderedUpdates.add(self,self.subtitle[0])
 
@@ -586,10 +594,26 @@ class CardGroup(pygame.sprite.OrderedUpdates):
 
 				pygame.sprite.OrderedUpdates.add(self,self.subtitle[i])
 
+		# sottotitolo per side == SIDE_BOTTOM: particolare, vicino al nome
+		else:
+			subleft = left + self.title.rect.width + 10
+			subtop = self.title.rect.centery
+			#self.subtitle.append('')
+
+			for i in range(0,3):
+				# sottotitolo -- prima linea dal basso
+				self.subtitle.append(TextLabel((255,255,0),'',(subleft,subtop),(right,bottom),False,TEXTBOX2))
+				subtop = subtop - TEXTBOX2 - 2
+
+				pygame.sprite.OrderedUpdates.add(self,self.subtitle[i])
+
+			#self.subtitle[0] = TextLabel((255,255,0),'',(subleft,subtop),(right,bottom), False);
+			#pygame.sprite.OrderedUpdates.add(self,self.subtitle[0])
+
 		right = False
 		if side == SIDE_RIGHT: right = self.screen.get_size()[0]-5
 
-		self.title = TextLabel((0,0,0),title,(left,top),(None,None),right)
+		# ora aggiungi il titolo
 		pygame.sprite.OrderedUpdates.add(self,self.title)
 
 		# linea highlight
