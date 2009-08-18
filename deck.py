@@ -52,6 +52,7 @@ class Deck:
 		'''Mischia il mazzo.'''
 
 		random.shuffle(self.deck)
+		#self.deck = [ 1, 2, 3, 31, 32, 33, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 4, 5, 6, 34, 35, 36, 37, 38, 39, 40 ]
 
 	def extract(self,count=1):
 		'''Estrae <count> carte dal mazzo.
@@ -151,10 +152,10 @@ def can_abort(cards, num_per_seem=DEFAULT_NUM_PER_SEEM):
 
 	fig_count = 0
 	for c in cards:
-		if c in (1,2,3):
+		if (c % num_per_seem) in (1,2,3):
 			return False
 
-		if c in (8,9,10):
+		if (c % num_per_seem) in (8,9,10):
 			fig_count = fig_count + 1
 			if (fig_count >= 4):
 				return False

@@ -338,6 +338,23 @@ class TS4Server(Thread,interfaces.NetEvents):
 
 			self.players[position+1].set_state(player.STATE_TURN)
 
+	def abort_hand(self):
+		'''Manda a monte la mano.'''
+
+		# elimina ogni chat pendente
+		for p in self.players:
+			p.cancel_chat_pending()
+
+		self.conn.send_all(interfaces.NetMethod(protocol.END_HAND))
+
+		# inizia nuova mano...
+		# dovrebbe funzionare...
+		self._make_deck()
+		for p in self.players:
+			p.conn.user_data['state'] = PSTATE_JOINED
+			p.set_state(player.STATE_WAIT)
+
+
 	def _update_game_points(self,last):
 		print "(SERVER) Current score:",self.points
 		for i in range(0,len(self.points)):

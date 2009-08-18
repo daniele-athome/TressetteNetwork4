@@ -44,6 +44,7 @@ class Player:
 		self.conn = conn
 		self.state = state
 		self.mycards = []
+		self.can_abort = False
 
 		self._register_methods()
 
@@ -91,6 +92,17 @@ class ServerPlayer(Player):
 		self.conn.register_method(protocol.THROW_CARD,self._card_thrown)
 		self.conn.register_method(protocol.CHAT,self._chat)
 		self.conn.register_method(protocol.REQ_CHAT,self._req_chat)
+		self.conn.register_method(protocol.ABORT_HAND,self._abort_hand)
+
+	def _abort_hand(self,conn):
+		'''Callback di mandata a monte.'''
+		if self.can_abort and self.server.turn_count < 1:
+			# termina partita senza segnare il punteggio
+			self.server.abort_hand()
+
+			return
+
+		conn.send(interfaces.NetMethod(protocol.ABORT_HAND,self.position,protocol.ERR_REFUSED))
 
 	def _card_thrown(self,conn,card_num):
 		'''Callback carta gettata a terra da un giocatore.'''
@@ -161,6 +173,8 @@ class ServerPlayer(Player):
 	def set_cards(self,cards):
 		Player.set_cards(self,cards)
 
+		self.can_abort = deck.can_abort(cards)
+
 		# sincronizza con il client
 		self.conn.send(interfaces.NetMethod(protocol.CARDS_DISTRIB,self.mycards))
 
@@ -219,7 +233,6 @@ class ClientPlayer(Player):
 		self.last_cards = None		# replay ultimo giro
 		self.current_last = [0, 0, 0, 0]
 		self.manualchat = manualchat
-		self.can_abort = False
 
 	def set_gui(self,gui):
 		'''Imposta l'interfaccia grafica con cui comunicare.'''
@@ -333,6 +346,10 @@ class ClientPlayer(Player):
 
 		# disattiva chat entry
 		self.gui.activate_chat(False)
+
+		# disattiva mandata a monte
+		self.can_abort = False
+		self.gui.set_player_subtitle(self.position, "")
 
 	def _turning(self,conn,position):
 		print "(CLIENT) It's time for position",position
@@ -534,9 +551,10 @@ class ClientPlayer(Player):
 			self.can_abort = deck.can_abort(cards)
 
 			# vai al tavolo di gioco, mostrando la nostre carte sul tavolo
-			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist,False)
+			self.gui.goto_menu('game-table',self._card_click,'',self.position,self.mycards,self.gui.plist,False,self.can_abort)
 			if self.can_abort == True:
-				self.gui.set_player_subtitle(0, 'Premi F4 per mandare a monte!')
+				print "(CLIENT PLAYER) Poverello! Can abort!"
+				#self.gui.set_player_subtitle(0, "Premi F4 per mandare a monte!")
 
 			# nascondi lo score board (se presente)
 			self.gui.update_score_board()
@@ -583,6 +601,11 @@ class ClientPlayer(Player):
 			if self.hand_position != self.position:
 				self.conn.send(interfaces.NetMethod(protocol.REQ_CHAT))
 				self.gui.set_chat(None,"sta parlando...")
+
+		elif button == 'f4' and self.can_abort == True:
+			# mandiamo a monte
+			self.conn.send(interfaces.NetMethod(protocol.ABORT_HAND))
+			self.gui.set_status("Un momento...")
 
 		elif button == 'escape':
 			self.gui.message_box(self._escape_response,"Terminare la partita?","Esci dal gioco",self.gui.get_buttons("MB_YESNO"))

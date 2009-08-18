@@ -32,7 +32,8 @@ RED=(255,0,0)
 HELP_TEXT = (
 	("F1","mostra questa schermata"),
 	("F2","mostra l'ultima mano"),
-	("F3","richiama il giocatore di mano")
+	("F3","richiama il giocatore di mano"),
+	("F4","manda a monte (se possibile)")
 )
 
 # responsi/testi pulsanti
@@ -291,7 +292,7 @@ class SelectorMenu(Menu):
 
 class GameTable(Menu):
 
-	def __init__(self, screen, callback = None, status_text = '', my_position = 0, my_cards = [], plist = ('','','',''), show_cursor = False):
+	def __init__(self, screen, callback = None, status_text = '', my_position = 0, my_cards = [], plist = ('','','',''), show_cursor = False, can_abort = False):
 		'''Crea un tavolo da gioco.
 
 		my_position: posizione globale del nostro client
@@ -352,6 +353,9 @@ class GameTable(Menu):
 		 size=objects.TEXTBOX,show_cursor=show_cursor,bg_color=GREEN)
 		self.chat = (name_label,chat_entry)
 		self.updater.add(*self.chat)
+
+		if can_abort == True:
+			self.groups[0].set_subtitle(("Premi F4 per mandare a monte!",))
 
 	def set_chat(self,name=None,chat=None):
 		if name != None:
@@ -601,6 +605,9 @@ class GameTable(Menu):
 
 						elif event.key == pygame.K_F3:
 							key = 'f3'
+
+						elif event.key == pygame.K_F4:
+							key = 'f4'
 
 						elif event.key == pygame.K_RETURN:
 							key = 'return'

@@ -42,6 +42,7 @@ POINTS='points'							# aggiornamento punteggio delle squadre
 END_HAND='end-hand'						# fine mano
 GAME_POINTS='game-points'				# aggiornamento punteggio partita delle squadre
 END_GAME='end-game'						# fine partita (vincitore, se < 0 parita')
+ABORT_HAND='abort-hand'					# annulla mano (manda a monte)
 
 ERR_NAME_BUSY='error-name-busy'					# nome in uso
 ERR_POS_BUSY='error-pos-busy'					# posizione occupata
